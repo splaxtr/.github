@@ -140,6 +140,9 @@ Removes WhatsApp and paper chaos. Makes work, crew, and cash flow clear with dai
 - Foreman can manage jobs and payments even if others never log in
 - Full history of jobs and payments with reportable views
 
+![Stars](https://img.shields.io/github/stars/splaxtr/usta_takip?style=social)
+![Forks](https://img.shields.io/github/forks/splaxtr/usta_takip?style=social)
+
 ---
 
 <div align="center">

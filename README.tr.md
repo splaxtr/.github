@@ -140,6 +140,9 @@ WhatsApp ve kağıt defter dağınıklığını ortadan kaldırır. İş, ekip v
 - Patron/eleman girmese bile usta tek başına iş ve ödeme yönetimi
 - Geçmiş iş ve ödeme kayıtları, raporlanabilir görünüm
 
+![Yıldızlar](https://img.shields.io/github/stars/splaxtr/usta_takip?style=social)
+![Fork'lar](https://img.shields.io/github/forks/splaxtr/usta_takip?style=social)
+
 ---
 
 <div align="center">
