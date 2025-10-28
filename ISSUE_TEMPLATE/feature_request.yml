@@ -1,0 +1,154 @@
+name: ✨ Özellik Talebi
+description: Yeni bir özellik veya geliştirme önerisi sunun
+title: "[ÖZELLİK]: "
+labels: ["enhancement", "needs-triage", "feature-request"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Özellik önerdiğiniz için teşekkürler! Görüşleriniz bizim için değerli.
+        
+        **Göndermeden önce:**
+        - Bu özellik daha önce talep edilmiş mi kontrol edin
+        - Önerinizin Tayank'ın amaçlarıyla uyumlu olduğundan emin olun
+        - Mümkünse örnek durum veya kullanım senaryosu ekleyin
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Tanımı
+      description: Bu özellik hangi sorunu çözecek? Mümkünse örnek durum ekleyin.
+      placeholder: "Örneğin: Her zaman ... olduğunda zorlanıyorum"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Önerilen Çözüm
+      description: Önerdiğiniz çözümü ayrıntılı bir şekilde açıklayın. Örnekler eklemek faydalıdır.
+      placeholder: "Şu şekilde bir çözüm görmek isterim..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Düşünülen Alternatifler
+      description: Hangi alternatif çözümleri düşündünüz?
+      placeholder: "Ayrıca şu alternatifleri de değerlendirdim..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Etkilenecek Bileşen
+      description: Bu özellik Tayank'ın hangi bölümünü etkileyecek?
+      options:
+        - Web Uygulaması (Next.js)
+        - Mobil Uygulama (Flutter iOS)
+        - Mobil Uygulama (Flutter Android)
+        - Masaüstü Uygulaması (Go)
+        - Backend API (Go)
+        - Real-time Servis (WebSocket)
+        - Bot Framework (Python)
+        - Bot Framework (Node.js)
+        - Database (PostgreSQL/Redis)
+        - Kimlik Doğrulama (Auth)
+        - Mesajlaşma
+        - Sunucular/Kanallar
+        - Kullanıcı Profili
+        - Dosya Yükleme (Storage)
+        - Ses/Video
+        - Bildirimler
+        - Arama
+        - Moderasyon
+        - Botlar/Entegrasyonlar
+        - Performans
+        - Güvenlik
+        - Diğer
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: Kullanıcı Türü
+      description: Bu özellikten kimler faydalanacak?
+      multiple: true
+      options:
+        - Normal Kullanıcılar
+        - Sunucu Sahipleri/Yöneticiler
+        - Moderatörler
+        - Geliştiriciler/Bot Yapanlar
+        - İş/Workspace Kullanıcıları
+        - Kurumsal Kullanıcılar
+        - Topluluk Yöneticileri
+        - Tüm Kullanıcılar
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Öncelik (Kendi Görüşünüz)
+      description: Bu özellik sizin için ne kadar önemli? Önceliği kendi kullanım durumunuza göre seçin.
+      options:
+        - Kritik (Bu olmadan Tayank'ı etkili kullanamıyorum)
+        - Yüksek (Çok önemli bir ihtiyaç)
+        - Orta (Faydalı olur, işimi kolaylaştırır)
+        - Düşük (Küçük iyileştirme, güzel olur)
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Kullanım Senaryosu / User Story
+      description: Bu özelliği nasıl kullanacağınızı veya başkalarının nasıl kullanacağını açıklayın. Mümkünse kısa bir senaryo veya adım ekleyin.
+      placeholder: |
+        Bir [kullanıcı türü] olarak,
+        [şunu yapmak istiyorum],
+        Böylece [hedefime ulaşabilirim]
+        
+        Örnek:
+        Bir sunucu yöneticisi olarak,
+        kullanıcıları belirli kriterlere göre otomatik olarak etiketlemek istiyorum,
+        böylece moderasyon işlemlerini otomatikleştirebilirim.
+    validations:
+      required: false
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Tasarım Örnekleri / Mockup
+      description: |
+        Elinizde mockup, wireframe veya başka uygulamalardan örnekler var mı?
+        **İpucu:** Görselleri sürükleyip bırakabilir veya link paylaşabilirsiniz.
+      placeholder: "Görseller ekleyin veya tasarımı açıklayın"
+
+  - type: textarea
+    id: technical
+    attributes:
+      label: Teknik Detaylar
+      description: Herhangi bir teknik detay, kısıtlama veya uygulama öneriniz var mı? Örneğin: Bu özellik veri tabanında yeni tablo gerektirebilir.
+      placeholder: "Bu özellik şunları gerektirebilir..."
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Ek Bilgiler
+      description: İlgili olabilecek diğer bilgileri paylaşın
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Kontrol Listesi
+      options:
+        - label: Var olan özellik taleplerini kontrol ettim ve tekrar bildirmedim
+          required: true
+        - label: Bu özellik Tayank'ın hedefleriyle uyumlu
+          required: true
+        - label: Özelliğin anlaşılması için yeterli bilgi sağladım
+          required: true
