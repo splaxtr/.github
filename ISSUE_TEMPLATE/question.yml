@@ -1,0 +1,35 @@
+name: "❓ Question"
+description: "Ask a question or request guidance."
+title: "[Question]: "
+labels: ["question"]
+assignees: ["splaxtr"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Need help? Search existing [discussions](https://github.com/splaxtr/.github/discussions) first—your answer may already be there.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: What do you need help with?
+      description: Be specific so we can get you to the right answer quickly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / links
+      description: Provide repo links, logs, screenshots, or discussion threads that add helpful context.
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched issues and discussions for an answer
+          required: true
+        - label: This is a how-to or clarification, not a bug or feature request
+          required: true

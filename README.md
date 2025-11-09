@@ -1,270 +1,91 @@
-<div align="right">
-
-[![Türkçe](https://img.shields.io/badge/Dil-Türkçe-red?style=for-the-badge)](README.tr.md)
-
-</div>
-
 <div align="center">
-
-# 👋 Hi, I'm Ahmet splaxtr
-
-**Software Engineer** | **Open Source Enthusiast** | **Clean Code Advocate**
-
-[![GitHub followers](https://img.shields.io/github/followers/splaxtr?style=for-the-badge&logo=github)](https://github.com/splaxtr)
-[![GitHub stars](https://img.shields.io/github/stars/splaxtr?style=for-the-badge&logo=github)](https://github.com/splaxtr?tab=repositories)
-
+  <h1>splaxtr/.github</h1>
+  <p>Centralized workflows, issue/PR templates, and community health files shared across all repositories.</p>
 </div>
 
----
+<p align="center">
+  <a href="./README.tr.md"><img src="https://img.shields.io/badge/Language-TR-red?style=for-the-badge" alt="Türkçe"></a>
+  <a href="./WORKFLOWS_GUIDE.md"><img src="https://img.shields.io/badge/Docs-Workflows%20Guide-6f42c1?style=for-the-badge&logo=githubactions" alt="Workflows Guide"></a>
+  <a href="./SETUP_GUIDE.md"><img src="https://img.shields.io/badge/Docs-Setup%20Guide-0ea5e9?style=for-the-badge" alt="Setup Guide"></a>
+  <a href="./FOLDER_STRUCTURE.md"><img src="https://img.shields.io/badge/Docs-Folder%20Structure-16a34a?style=for-the-badge" alt="Folder Structure"></a>
+  <a href="./CONTRIBUTING.md"><img src="https://img.shields.io/badge/Docs-Contributing-f97316?style=for-the-badge" alt="Contributing"></a>
+  <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Docs-Security%20Policy-ef4444?style=for-the-badge" alt="Security Policy"></a>
+</p>
 
-## 🚀 About Me
+## 🇬🇧 English · [🇹🇷 Türkçe](README.tr.md)
 
-Passionate software engineer focused on building **scalable**, **maintainable**, and **well-tested** applications. I believe in automation, clean architecture, and continuous improvement through modern DevOps practices.
-
-### 💡 What I Do
-
-- 🏗️ Build robust applications across multiple technology stacks
-- 🔄 Design and implement CI/CD pipelines
-- 🧪 Practice test-driven development (TDD)
-- 🔐 Prioritize security-first development
-- 📚 Document everything, learn continuously
-- 🌟 Contribute to open source projects
-
----
-
-## 🛠️ Tech Stack
-
-<div align="center">
-
-### Languages
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
-
-### Frontend
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
-![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-
-### Backend
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
-![Nest.js](https://img.shields.io/badge/Nest.js-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![Bun](https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white)
-
-### DevOps & Tools
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-
-### Databases
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
-
-</div>
+### 📚 Table of Contents
+1. [Overview](#overview)
+2. [Repository Contents](#repository-contents)
+3. [Reusable Workflows](#reusable-workflows)
+4. [Documentation](#documentation)
+5. [Quick Start](#quick-start)
+6. [Validation & Sample Projects](#validation--sample-projects)
+7. [Support & Contact](#support--contact)
 
 ---
 
-## 📊 GitHub Stats
+## Overview
+This repository houses every shared GitHub asset used across the splaxtr organization. It keeps workflows, issue/PR templates, policies, and helper scripts in one place so downstream projects can stay consistent without duplicating configuration. The structure also includes lightweight sample applications (Node, Python, Go, Flutter, Docker) that power automated validation of reusable workflows.
 
-<div align="center">
+## Repository Contents
+| Category | What you get |
+| --- | --- |
+| 🔄 Workflows | Reusable CI/CD pipelines for Node, Bun, Python, Go, Flutter, Docker builds, deployments, metrics, security scans, and an aggregate validator. |
+| 📋 Templates | GitHub Issue forms (bug, feature, question) plus a streamlined PR template and CODEOWNERS-aware reviewer guidance. |
+| 📜 Policies | CONTRIBUTING, SECURITY, SUPPORT, CODE_OF_CONDUCT, FUNDING, and language-specific variants to keep every repo compliant. |
+| 🏗️ Sample projects | `frontend`, `backend`, `mobile`, `bun-app`, `bots/*`, and `docker` skeletons that act as fixtures for CI validation. |
+| 🧰 Tooling | Dependabot, label definitions, release drafter config, workflow configs, and helper scripts for bootstrap automation. |
 
-<img height="180em" src="https://github-readme-stats.vercel.app/api?username=splaxtr&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true&hide_border=true"/>
-<img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=splaxtr&layout=compact&theme=tokyonight&hide_border=true"/>
+## Reusable Workflows
+| Workflow | Description |
+| --- | --- |
+| [reusable-node-ci](./workflows/reusable-node-ci.yml) | Matrixed lint/test/build pipeline for npm, yarn, or pnpm projects. |
+| [reusable-bun-ci](./workflows/reusable-bun-ci.yml) | Bun-specific linting, coverage, build, and optional E2E stage. |
+| [reusable-python-ci](./workflows/reusable-python-ci.yml) | Pip install, Ruff/Black checks, pytest coverage, and artifact uploads. |
+| [reusable-go-ci](./workflows/reusable-go-ci.yml) | GolangCI-Lint, race-aware tests, binary builds, and optional Docker image. |
+| [reusable-flutter-ci](./workflows/reusable-flutter-ci.yml) | Flutter format/analyze/test plus Android/Web build matrices. |
+| [reusable-docker-build](./workflows/reusable-docker-build.yml) | Cached Buildx builds with GHCR pushes and metadata tagging. |
+| [reusable-deploy-production](./workflows/reusable-deploy-production.yml) | Multi-service deploy orchestration (backend, frontend, mobile, bots, DB). |
+| [reusable-metrics-ci](./workflows/reusable-metrics-ci.yml) | LOC/coverage/file-count collection with SVG summary artifacts. |
+| [reusable-monorepo-ci](./workflows/reusable-monorepo-ci.yml) | Fan-out pipeline that runs per-stack CI inside monorepos. |
+| [reusable-security](./workflows/reusable-security.yml) | npm audit + Trivy filesystem scans + CodeQL analysis. |
+| [ci-lint](./workflows/ci-lint.yml) | Composite workflow that chains the reusable stacks for a full validation run. |
+| [validate-reusables](./workflows/validate-reusables.yml) | Repository-only job that exercises every reusable workflow using the sample projects. |
 
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=splaxtr&theme=tokyonight&hide_border=true" alt="GitHub Streak"/>
+See **[WORKFLOWS_GUIDE.md](./WORKFLOWS_GUIDE.md)** for input details, matrices, and troubleshooting notes.
 
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=splaxtr&theme=tokyo-night&hide_border=true&area=true" alt="Contribution Graph"/>
+## Documentation
+- [WORKFLOWS_GUIDE.md](./WORKFLOWS_GUIDE.md) – Comprehensive reference for each workflow, inputs, outputs, and usage examples.
+- [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md) – Full directory tree with explanations for each file/folder, including templates and validation assets.
+- [SETUP_GUIDE.md](./SETUP_GUIDE.md) – Step-by-step instructions for creating/updating an org-level `.github` repo, customizing contacts, and wiring workflows.
+- [CONTRIBUTING.md](./CONTRIBUTING.md) – Branching model, commit conventions, PR expectations, and label usage.
+- [SECURITY.md](./SECURITY.md) – Disclosure policy and the `security@org` contact address.
+- Bonus references: [labels-README.md](./labels-README.md), [SUPPORT.md](./SUPPORT.md), [SUPPORT.tr.md](./SUPPORT.tr.md).
 
-</div>
+## Quick Start
+1. **Reference the workflows:** add a workflow in your project that reuses one of the templates, e.g.
+   ```yaml
+   name: CI
+   on: [push, pull_request]
+   jobs:
+     build:
+       uses: splaxtr/.github/.github/workflows/reusable-node-ci.yml@main
+       with:
+         node_version: '20.x'
+         working_directory: '.'
+   ```
+2. **Leverage templates:** copy issue/PR templates automatically by keeping your repository public under the same organization—GitHub falls back to these defaults when local overrides are absent.
+3. **Follow the guides:** update contact emails, policies, and docs as described in SETUP_GUIDE before rolling out to production repositories.
 
----
+## Validation & Sample Projects
+- The `validate-reusables.yml` workflow runs on push/dispatch and depends on the sample folders (`frontend`, `backend`, `mobile`, `bun-app`, `bots/node`, `bots/python`, `docker`). Keep them lightweight but functional so changes to workflows get exercised automatically.
+- To test locally, run the same workflows via `act` or trigger `workflow_dispatch` runs in a fork before merging large changes.
 
-## 🎯 Current Focus
+## Support & Contact
+- Questions: open a discussion or file a “Question” issue using the provided template.
+- Bugs/features: use the corresponding issue form with as much detail as possible.
+- Security: report privately to **security@org** as outlined in [SECURITY.md](./SECURITY.md).
+- General support: [SUPPORT.md](./SUPPORT.md) lists email and response expectations.
 
-```typescript
-const currentFocus = {
-  learning: ['System Design', 'Cloud Architecture', 'Advanced Patterns'],
-  building: ['Scalable Applications', 'Developer Tools', 'CI/CD Pipelines'],
-  improving: ['Code Quality', 'Security Practices', 'Performance Optimization'],
-  contributing: ['Open Source', 'Documentation', 'Community Building']
-};
-```
-
----
-
-## 🏆 Featured Projects
-
-### 🚗 [KaportApp](https://github.com/splaxtr/KaportApp)
-**Smart Vehicle and Parts Management**
-
-Centralizes vehicle and parts tracking for auto shops. Role-based access simplifies vehicle records, parts inventory, and staff operations.
-
-**🔧 Tech Stack:** Flutter • Firebase (Auth, Firestore) • Riverpod  
-**✨ Features:**
-- Role-based users (owner, staff)
-- Vehicle and parts management
-- Assign and remove staff
-- Profile and password updates
-- Android and Web support
-
-![Stars](https://img.shields.io/github/stars/splaxtr/KaportApp?style=social)
-![Forks](https://img.shields.io/github/forks/splaxtr/KaportApp?style=social)
-
----
-
-### 🚀 [usta_takip](https://github.com/splaxtr/usta_takip)
-**Foreman-Focused Mobile Job Management**
-
-The foreman creates jobs, adds workers, records day-by-day work, and tracks expenses and payments. Clients or workers are not required to use the app. Control stays with the foreman.
-
-**What problem does it solve?**  
-Removes WhatsApp and paper chaos. Makes work, crew, and cash flow clear with daily, auditable records.
-
-**🔧 Tech Stack:** Flutter • Hive  
-**✨ Features:**
-- Day-based work tracking (JobDays)
-- Payment and approval flow: Foreman → Worker → Client
-- Cash and IBAN payment logging
-- Expense tracking (food, transport, materials, etc.)
-- Same-day dynamic crew changes recorded
-- Foreman can manage jobs and payments even if others never log in
-- Full history of jobs and payments with reportable views
-
-![Stars](https://img.shields.io/github/stars/splaxtr/usta_takip?style=social)
-![Forks](https://img.shields.io/github/forks/splaxtr/usta_takip?style=social)
-
----
-
-<div align="center">
-
-## ⚙️ This Repository
-
-**Centralized GitHub configurations for all my personal projects**
-
-This repository contains shared workflows, templates, and configurations used across my projects.
-
-</div>
-
-### 📦 What's Included
-
-| Category | Description |
-|----------|-------------|
-| 🔄 **Reusable Workflows** | CI/CD workflows for Node.js, Python, Go, Flutter, Docker, and more |
-| 📋 **Issue Templates** | Standardized bug reports, feature requests, and improvement templates |
-| 🔀 **PR Templates** | Pull request templates for different scenarios |
-| 📜 **Community Files** | Code of Conduct, Contributing guidelines, Security policy, Support |
-| ⚙️ **Configurations** | Dependabot, labels, release drafter, editor configs |
-| 🛠️ **Scripts** | Automation scripts for repository setup and maintenance |
-
-### 🚀 Available Workflows
-
-| Workflow | Description | Status |
-|----------|-------------|--------|
-| [Node.js CI](./workflows/reusable-node-ci.yml) | Testing, linting, building for Node.js/Bun projects | ✅ Active |
-| [Python CI](./workflows/reusable-python-ci.yml) | Testing and linting for Python projects | ✅ Active |
-| [Go CI](./workflows/reusable-go-ci.yml) | Testing and building for Go projects | ✅ Active |
-| [Flutter CI](./workflows/reusable-flutter-ci.yml) | Testing and building Flutter applications | ✅ Active |
-| [Docker Build](./workflows/reusable-docker-build.yml) | Multi-platform Docker image builds | ✅ Active |
-| [Monorepo CI](./workflows/reusable-monorepo-ci.yml) | Change detection and selective CI for monorepos | ✅ Active |
-| [Security Scan](./workflows/reusable-security.yml) | Vulnerability scanning and SAST | ✅ Active |
-| [Metrics Collection](./workflows/reusable-metrics-ci.yml) | Code quality and performance metrics | ✅ Active |
-| [Production Deploy](./workflows/reusable-deploy-production.yml) | Automated production deployments | ✅ Active |
-
-### 📖 Documentation
-
-- **[Setup Guide](./SETUP_GUIDE.md)** - How to use these configs in your projects
-- **[Folder Structure](./FOLDER_STRUCTURE.md)** - Repository organization guide
-- **[Labels Guide](./labels-README.md)** - Issue and PR labeling system
-
-### 🔧 Quick Start
-
-Use a reusable workflow in your project:
-
-```yaml
-# .github/workflows/ci.yml
-name: CI
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    uses: splaxtr/.github/.github/workflows/reusable-node-ci.yml@main
-    with:
-      node-version: '20'
-      run-tests: true
-      run-lint: true
-```
-
-**More examples:** See [Setup Guide](./SETUP_GUIDE.md)
-
-### 🎯 Features
-
-✅ **Automatic Fallback** - Community health files work automatically for all public repos
-✅ **DRY Principle** - Write once, use everywhere
-✅ **Easy Maintenance** - Update all projects from one place
-✅ **Best Practices** - Industry-standard configurations
-✅ **Well Documented** - Clear guides and examples
-✅ **Flexible** - Customizable for different project needs
-
----
-
-## 📫 Get in Touch
-
-<div align="center">
-
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ahmetsplaxtr@gmail.com)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/splax/)
-
-**💬 Open to collaborations, discussions, and new opportunities!**
-
-</div>
-
----
-
-## 💝 Support My Work
-
-If you find my projects helpful, consider:
-
-- ⭐ Starring repositories you find useful
-- 🐛 Reporting bugs and suggesting features
-- 🔀 Contributing code or documentation
-- 📢 Sharing projects with others
-
----
-
-<div align="center">
-
-### 💭 Random Dev Quote
-
-![](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=tokyonight)
-
----
-
-![Profile Views](https://komarev.com/ghpvc/?username=splaxtr&color=blueviolet&style=for-the-badge)
-
-**Thanks for visiting! Happy coding! 🚀**
-
-</div>
-
----
-
-<details>
-<summary>📈 More Stats</summary>
-
-### 🏆 GitHub Trophies
-![](https://github-profile-trophy.vercel.app/?username=splaxtr&theme=tokyonight&no-frame=true&no-bg=true&margin-w=4)
-
-### 📅 Contribution Calendar
-![](https://ghchart.rshah.org/409ba5/splaxtr)
-
-</details>
+Thanks for keeping the platform consistent! 🚀

@@ -1,270 +1,91 @@
-<div align="right">
-
-[![English](https://img.shields.io/badge/Language-English-blue?style=for-the-badge)](README.md)
-
-</div>
-
 <div align="center">
-
-# 👋 Merhaba, Ben Ahmet splaxtr
-
-**Yazılım Mühendisi** | **Açık Kaynak Tutkunu** | **Temiz Kod Savunucusu**
-
-[![GitHub takipçileri](https://img.shields.io/github/followers/splaxtr?style=for-the-badge&logo=github)](https://github.com/splaxtr)
-[![GitHub yıldızları](https://img.shields.io/github/stars/splaxtr?style=for-the-badge&logo=github)](https://github.com/splaxtr?tab=repositories)
-
+  <h1>splaxtr/.github</h1>
+  <p>Tüm projelerde paylaşılan workflow'lar, issue/PR şablonları ve topluluk dosyaları burada tutulur.</p>
 </div>
 
----
+<p align="center">
+  <a href="./README.md"><img src="https://img.shields.io/badge/Language-EN-blue?style=for-the-badge" alt="English"></a>
+  <a href="./WORKFLOWS_GUIDE.md"><img src="https://img.shields.io/badge/Dok%C3%BCman-Workflows%20Guide-6f42c1?style=for-the-badge&logo=githubactions" alt="Workflows Guide"></a>
+  <a href="./SETUP_GUIDE.md"><img src="https://img.shields.io/badge/Dok%C3%BCman-Kurulum%20K%C4%B1lavuzu-0ea5e9?style=for-the-badge" alt="Kurulum Kılavuzu"></a>
+  <a href="./FOLDER_STRUCTURE.md"><img src="https://img.shields.io/badge/Dok%C3%BCman-Klas%C3%B6r%20Yap%C4%B1s%C4%B1-16a34a?style=for-the-badge" alt="Klasör Yapısı"></a>
+  <a href="./CONTRIBUTING.md"><img src="https://img.shields.io/badge/Dok%C3%BCman-Katk%C4%B1-f97316?style=for-the-badge" alt="Katkı"></a>
+  <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Dok%C3%BCman-G%C3%BCvenlik-ef4444?style=for-the-badge" alt="Güvenlik Politikası"></a>
+</p>
 
-## 🚀 Hakkımda
+## [🇬🇧 English](README.md) · 🇹🇷 Türkçe
 
-**Ölçeklenebilir**, **sürdürülebilir** ve **iyi test edilmiş** uygulamalar geliştirmeye odaklanan tutkulu bir yazılım mühendisiyim. Otomasyon, temiz mimari ve modern DevOps pratikleri ile sürekli gelişime inanıyorum.
-
-### 💡 Neler Yapıyorum
-
-- 🏗️ Birden fazla teknoloji yığını üzerinde sağlam uygulamalar geliştiriyorum
-- 🔄 CI/CD hatlarını tasarlıyor ve uyguluyorum
-- 🧪 Test odaklı geliştirme (TDD) uyguluyorum
-- 🔐 Güvenlik öncelikli geliştirmeye önem veriyorum
-- 📚 Her şeyi dokümante ediyor, sürekli öğreniyorum
-- 🌟 Açık kaynak projelere katkıda bulunuyorum
-
----
-
-## 🛠️ Teknoloji Yığını
-
-<div align="center">
-
-### Diller
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
-
-### Frontend
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
-![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-
-### Backend
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
-![Nest.js](https://img.shields.io/badge/Nest.js-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![Bun](https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white)
-
-### DevOps & Araçlar
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-
-### Veritabanları
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
-
-</div>
+### 📚 İçindekiler
+1. [Genel Bakış](#genel-bakış)
+2. [Depo İçeriği](#depo-içeriği)
+3. [Yeniden Kullanılabilir Workflowlar](#yeniden-kullanılabilir-workflowlar)
+4. [Dokümantasyon](#dokümantasyon)
+5. [Hızlı Başlangıç](#hızlı-başlangıç)
+6. [Doğrulama ve Örnek Projeler](#doğrulama-ve-örnek-projeler)
+7. [Destek ve İletişim](#destek-ve-iletişim)
 
 ---
 
-## 📊 GitHub İstatistikleri
+## Genel Bakış
+Bu depo, splaxtr organizasyonu içindeki tüm paylaşılan GitHub varlıklarını barındırır. Workflow'lar, issue/PR şablonları, politikalar ve yardımcı scriptler tek yerde tutulur, böylece alt projeler aynı ayarları kopyalamaya ihtiyaç duymadan tutarlı kalır. Yapı ayrıca yeniden kullanılabilir workflow'ların otomatik olarak doğrulanması için hafif örnek uygulamalar (Node, Python, Go, Flutter, Docker) içerir.
 
-<div align="center">
+## Depo İçeriği
+| Kategori | Sağlananlar |
+| --- | --- |
+| 🔄 Workflow'lar | Node, Bun, Python, Go, Flutter, Docker build, deploy, metrik, güvenlik taraması ve toplu doğrulama için yeniden kullanılabilir CI/CD pipeline'ları. |
+| 📋 Şablonlar | GitHub Issue formları (bug, feature, question) ile sadeleştirilmiş PR şablonu ve CODEOWNERS uyumlu reviewer uyarıları. |
+| 📜 Politikalar | CONTRIBUTING, SECURITY, SUPPORT, CODE_OF_CONDUCT, FUNDING ve dil bazlı varyasyonlar ile tüm depolar için uyumluluk. |
+| 🏗️ Örnek projeler | `frontend`, `backend`, `mobile`, `bun-app`, `bots/*` ve `docker` klasörleri CI doğrulaması için fixture görevi görür. |
+| 🧰 Araçlar | Dependabot, etiket tanımları, release drafter konfigürasyonu, workflow ayarları ve bootstrap otomasyonu için scriptler. |
 
-<img height="180em" src="https://github-readme-stats.vercel.app/api?username=splaxtr&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true&hide_border=true"/>
-<img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=splaxtr&layout=compact&theme=tokyonight&hide_border=true"/>
+## Yeniden Kullanılabilir Workflowlar
+| Workflow | Açıklama |
+| --- | --- |
+| [reusable-node-ci](./workflows/reusable-node-ci.yml) | npm, yarn veya pnpm projeleri için lint/test/build matrisleri. |
+| [reusable-bun-ci](./workflows/reusable-bun-ci.yml) | Bun projelerinde lint, coverage, build ve isteğe bağlı E2E aşaması. |
+| [reusable-python-ci](./workflows/reusable-python-ci.yml) | Pip kurulumları, Ruff/Black kontrolleri, pytest coverage ve artifact yüklemeleri. |
+| [reusable-go-ci](./workflows/reusable-go-ci.yml) | GolangCI-Lint, race destekli testler, binary build ve isteğe bağlı Docker imajı. |
+| [reusable-flutter-ci](./workflows/reusable-flutter-ci.yml) | Flutter format/analyze/test ve Android/Web build matrisleri. |
+| [reusable-docker-build](./workflows/reusable-docker-build.yml) | GHCR push destekli, cache'li Buildx süreçleri ve metadata etiketleme. |
+| [reusable-deploy-production](./workflows/reusable-deploy-production.yml) | Backend, frontend, mobil, bot ve veritabanı için çok servisli deploy orkestrasyonu. |
+| [reusable-metrics-ci](./workflows/reusable-metrics-ci.yml) | LOC/coverage/dosya sayımı + SVG özet artefaktları. |
+| [reusable-monorepo-ci](./workflows/reusable-monorepo-ci.yml) | Monorepo içinde her teknoloji yığını için paralel CI çalıştırır. |
+| [reusable-security](./workflows/reusable-security.yml) | npm audit + Trivy dosya sistemi taraması + CodeQL analizi. |
+| [ci-lint](./workflows/ci-lint.yml) | Tüm yeniden kullanılabilir parçaları zincirleyen bileşik doğrulama workflow'u. |
+| [validate-reusables](./workflows/validate-reusables.yml) | Örnek projelerle tüm workflow'ları çalıştıran depo içi doğrulama işi. |
 
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=splaxtr&theme=tokyonight&hide_border=true" alt="GitHub Streak"/>
+Detaylı girişler ve sorun giderme notları için **[WORKFLOWS_GUIDE.md](./WORKFLOWS_GUIDE.md)** dosyasına bakın.
 
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=splaxtr&theme=tokyo-night&hide_border=true&area=true" alt="Katkı Grafiği"/>
+## Dokümantasyon
+- [WORKFLOWS_GUIDE.md](./WORKFLOWS_GUIDE.md) – Her workflow'un giriş/çıkışları ve kullanım örnekleri.
+- [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md) – Şablonlar ve doğrulama varlıkları dahil tüm dosyaların açıklamalı klasör ağacı.
+- [SETUP_GUIDE.md](./SETUP_GUIDE.md) – Organizasyon seviyesinde `.github` reposu oluşturma/güncelleme, iletişim bilgilerini özelleştirme ve workflow bağlama adımları.
+- [CONTRIBUTING.md](./CONTRIBUTING.md) – Branch modeli, commit konvansiyonları, PR beklentileri ve etiket kullanımı.
+- [SECURITY.md](./SECURITY.md) – Açıklama politikası ve `security@org` iletişim adresi.
+- Ek kaynaklar: [labels-README.md](./labels-README.md), [SUPPORT.md](./SUPPORT.md), [SUPPORT.tr.md](./SUPPORT.tr.md).
 
-</div>
+## Hızlı Başlangıç
+1. **Workflow'u referans alın:** projenize aşağıdaki gibi yeniden kullanılabilir workflow ekleyin.
+   ```yaml
+   name: CI
+   on: [push, pull_request]
+   jobs:
+     build:
+       uses: splaxtr/.github/.github/workflows/reusable-node-ci.yml@main
+       with:
+         node_version: '20.x'
+         working_directory: '.'
+   ```
+2. **Şablonları kullanın:** depo public ise GitHub yerel şablon yoksa otomatik olarak bu issue/PR şablonlarına başvurur.
+3. **Kılavuzları takip edin:** SETUP_GUIDE'de anlatıldığı gibi iletişim adreslerini, politikaları ve dokümanları projelerinize uyarlayın.
 
----
+## Doğrulama ve Örnek Projeler
+- `validate-reusables.yml` workflow'u push/workflow_dispatch tetiklerinde çalışır ve örnek klasörleri (`frontend`, `backend`, `mobile`, `bun-app`, `bots/node`, `bots/python`, `docker`) kullanarak her yeniden kullanılabilir workflow'u test eder.
+- Yerelde denemek isterseniz aynı workflow'ları `act` ile koşturabilir veya fork üzerinde `workflow_dispatch` ile tetikleyebilirsiniz.
 
-## 🎯 Şu Anki Odak
+## Destek ve İletişim
+- Sorular: Discussion açın veya "Question" issue formunu doldurun.
+- Hata/özellik: İlgili issue formunu detaylı doldurun.
+- Güvenlik: [SECURITY.md](./SECURITY.md) içinde anlatıldığı gibi **security@org** adresine özel olarak iletin.
+- Genel destek: [SUPPORT.md](./SUPPORT.md) dokümanındaki e-posta ve SLA bilgilerini kullanın.
 
-```typescript
-const suAnkiOdak = {
-  ogrenme: ['Sistem Tasarımı', 'Bulut Mimarisi', 'İleri Seviye Kalıplar'],
-  gelistirme: ['Ölçeklenebilir Uygulamalar', 'Geliştirici Araçları', 'CI/CD Hatları'],
-  iyilestirme: ['Kod Kalitesi', 'Güvenlik Pratikleri', 'Performans Optimizasyonu'],
-  katki: ['Açık Kaynak', 'Dokümantasyon', 'Topluluk Oluşturma']
-};
-```
-
----
-
-## 🏆 Öne Çıkan Projeler
-
-### 🚗 [KaportApp](https://github.com/splaxtr/KaportApp)
-**Akıllı Araç ve Parça Yönetimi**
-
-Oto servisleri için araç ve parça takibini tek yerde toplar. Rol tabanlı erişim ile araç kayıtları, parça stokları ve çalışan yönetimini sadeleştirir.
-
-**🔧 Teknoloji Yığını:** Flutter • Firebase (Auth, Firestore) • Riverpod  
-**✨ Özellikler:**
-- Rol tabanlı kullanıcılar (sahip, çalışan)
-- Araç ve parça yönetimi
-- Çalışan atama ve çıkarma
-- Profil ve şifre güncelleme
-- Android ve Web desteği
-
-![Yıldızlar](https://img.shields.io/github/stars/splaxtr/KaportApp?style=social)
-![Fork'lar](https://img.shields.io/github/forks/splaxtr/KaportApp?style=social)
-
----
-
-### 🚀 [usta_takip](https://github.com/splaxtr/usta_takip)
-**Usta Odaklı Mobil İş Yönetimi**
-
-Usta işi açar, eleman ekler, kim hangi gün çalıştı kaydeder, gider ve ödemeleri takip eder. Patronun veya elemanların uygulamayı kullanması zorunlu değildir. Kontrol ustadadır.
-
-**Hangi problemi çözüyor?**  
-WhatsApp ve kağıt defter dağınıklığını ortadan kaldırır. İş, ekip ve para akışını günlük ve kanıtlanabilir kayıtlarla netleştirir.
-
-**🔧 Teknoloji Yığını:** Flutter • Hive  
-**✨ Özellikler:**
-- Gün bazlı çalışma takibi (JobDays)
-- Usta → Eleman → Patron ödeme ve onay akışı
-- Nakit ve IBAN ödeme kaydı
-- Gider takibi (yemek, ulaşım, malzeme vb.)
-- Gün içi dinamik ekip değişikliği kaydı
-- Patron/eleman girmese bile usta tek başına iş ve ödeme yönetimi
-- Geçmiş iş ve ödeme kayıtları, raporlanabilir görünüm
-
-![Yıldızlar](https://img.shields.io/github/stars/splaxtr/usta_takip?style=social)
-![Fork'lar](https://img.shields.io/github/forks/splaxtr/usta_takip?style=social)
-
----
-
-<div align="center">
-
-## ⚙️ Bu Repository
-
-**Tüm kişisel projelerim için merkezi GitHub konfigürasyonları**
-
-Bu repository, projelerimde kullanılan paylaşılan workflow'lar, şablonlar ve konfigürasyonları içerir.
-
-</div>
-
-### 📦 İçindekiler
-
-| Kategori | Açıklama |
-|----------|----------|
-| 🔄 **Yeniden Kullanılabilir Workflow'lar** | Node.js, Python, Go, Flutter, Docker ve daha fazlası için CI/CD workflow'ları |
-| 📋 **Issue Şablonları** | Standartlaştırılmış hata raporları, özellik istekleri ve iyileştirme şablonları |
-| 🔀 **PR Şablonları** | Farklı senaryolar için pull request şablonları |
-| 📜 **Topluluk Dosyaları** | Davranış Kuralları, Katkı kılavuzu, Güvenlik politikası, Destek |
-| ⚙️ **Konfigürasyonlar** | Dependabot, etiketler, release drafter, editör konfigürasyonları |
-| 🛠️ **Scriptler** | Repository kurulum ve bakım otomasyon scriptleri |
-
-### 🚀 Mevcut Workflow'lar
-
-| Workflow | Açıklama | Durum |
-|----------|----------|-------|
-| [Node.js CI](./workflows/reusable-node-ci.yml) | Node.js/Bun projeleri için test, lint, build | ✅ Aktif |
-| [Python CI](./workflows/reusable-python-ci.yml) | Python projeleri için test ve lint | ✅ Aktif |
-| [Go CI](./workflows/reusable-go-ci.yml) | Go projeleri için test ve build | ✅ Aktif |
-| [Flutter CI](./workflows/reusable-flutter-ci.yml) | Flutter uygulamaları için test ve build | ✅ Aktif |
-| [Docker Build](./workflows/reusable-docker-build.yml) | Çoklu platform Docker imaj oluşturma | ✅ Aktif |
-| [Monorepo CI](./workflows/reusable-monorepo-ci.yml) | Monorepo'lar için değişiklik tespiti ve seçici CI | ✅ Aktif |
-| [Güvenlik Tarama](./workflows/reusable-security.yml) | Güvenlik açığı tarama ve SAST | ✅ Aktif |
-| [Metrik Toplama](./workflows/reusable-metrics-ci.yml) | Kod kalitesi ve performans metrikleri | ✅ Aktif |
-| [Production Deploy](./workflows/reusable-deploy-production.yml) | Otomatik production deployment'ları | ✅ Aktif |
-
-### 📖 Dokümantasyon
-
-- **[Kurulum Kılavuzu](./SETUP_GUIDE.md)** - Bu konfigürasyonları projelerinizde nasıl kullanırsınız
-- **[Klasör Yapısı](./FOLDER_STRUCTURE.md)** - Repository organizasyon kılavuzu
-- **[Etiket Kılavuzu](./labels-README.md)** - Issue ve PR etiketleme sistemi
-
-### 🔧 Hızlı Başlangıç
-
-Projenizde yeniden kullanılabilir bir workflow kullanın:
-
-```yaml
-# .github/workflows/ci.yml
-name: CI
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    uses: splaxtr/.github/.github/workflows/reusable-node-ci.yml@main
-    with:
-      node-version: '20'
-      run-tests: true
-      run-lint: true
-```
-
-**Daha fazla örnek:** [Kurulum Kılavuzu](./SETUP_GUIDE.md)'na bakın
-
-### 🎯 Özellikler
-
-✅ **Otomatik Fallback** - Topluluk sağlık dosyaları tüm public repo'lar için otomatik çalışır
-✅ **DRY Prensibi** - Bir kez yaz, her yerde kullan
-✅ **Kolay Bakım** - Tüm projeleri tek yerden güncelle
-✅ **En İyi Pratikler** - Endüstri standardı konfigürasyonlar
-✅ **İyi Dokümante Edilmiş** - Açık kılavuzlar ve örnekler
-✅ **Esnek** - Farklı proje ihtiyaçları için özelleştirilebilir
-
----
-
-## 📫 İletişime Geçin
-
-<div align="center">
-
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ahmetsplaxtr@gmail.com)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/splax/)
-
-**💬 İşbirlikleri, tartışmalar ve yeni fırsatlara açığım!**
-
-</div>
-
----
-
-## 💝 Çalışmalarımı Destekleyin
-
-Projelerimi faydalı buluyorsanız:
-
-- ⭐ Faydalı bulduğunuz repository'leri yıldızlayın
-- 🐛 Hataları bildirin ve özellikler önerin
-- 🔀 Kod veya dokümantasyon katkısında bulunun
-- 📢 Projeleri başkalarıyla paylaşın
-
----
-
-<div align="center">
-
-### 💭 Rastgele Dev Alıntısı
-
-![](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=tokyonight)
-
----
-
-![Profil Görüntülenme](https://komarev.com/ghpvc/?username=splaxtr&color=blueviolet&style=for-the-badge)
-
-**Ziyaret için teşekkürler! İyi kodlamalar! 🚀**
-
-</div>
-
----
-
-<details>
-<summary>📈 Daha Fazla İstatistik</summary>
-
-### 🏆 GitHub Başarıları
-![](https://github-profile-trophy.vercel.app/?username=splaxtr&theme=tokyonight&no-frame=true&no-bg=true&margin-w=4)
-
-### 📅 Katkı Takvimi
-![](https://ghchart.rshah.org/409ba5/splaxtr)
-
-</details>
+Katkılarınız sayesinde platform tutarlı kalıyor, teşekkürler! 🚀
