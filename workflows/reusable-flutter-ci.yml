@@ -38,11 +38,20 @@ concurrency:
 jobs:
   flutter-ci:
     name: Flutter matrix (${{ matrix.stage }})
-    runs-on: ubuntu-latest
+    if: ${{ matrix.stage != 'build-ios' || contains(inputs.build_targets, 'ios') }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        stage: [tests, build-android, build-web]
+        include:
+          - stage: tests
+            runner: ubuntu-latest
+          - stage: build-android
+            runner: ubuntu-latest
+          - stage: build-web
+            runner: ubuntu-latest
+          - stage: build-ios
+            runner: macos-latest
     defaults:
       run:
         shell: bash
@@ -102,18 +111,36 @@ jobs:
         if: ${{ matrix.stage == 'build-android' && contains(inputs.build_targets, 'android') }}
         run: flutter build apk --release --split-per-abi
 
+      - name: Upload Android artifact
+        if: ${{ matrix.stage == 'build-android' && contains(inputs.build_targets, 'android') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-android-${{ github.sha }}
+          path: ${{ inputs.working_directory }}/build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: warn
+
       - name: Build Web
         if: ${{ matrix.stage == 'build-web' && contains(inputs.build_targets, 'web') }}
         run: flutter build web --release
 
-      - name: Upload build artifact
-        if: ${{ startsWith(matrix.stage, 'build-') }}
+      - name: Upload Web artifact
+        if: ${{ matrix.stage == 'build-web' && contains(inputs.build_targets, 'web') }}
         uses: actions/upload-artifact@v4
         with:
-          name: flutter-${{ matrix.stage }}-${{ github.sha }}
-          path: |
-            ${{ inputs.working_directory }}/build/app/outputs/flutter-apk/*.apk
-            ${{ inputs.working_directory }}/build/web/**
+          name: flutter-web-${{ github.sha }}
+          path: ${{ inputs.working_directory }}/build/web/**
+          if-no-files-found: warn
+
+      - name: Build iOS (no codesign)
+        if: ${{ matrix.stage == 'build-ios' && contains(inputs.build_targets, 'ios') }}
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS artifact
+        if: ${{ matrix.stage == 'build-ios' && contains(inputs.build_targets, 'ios') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-ios-${{ github.sha }}
+          path: ${{ inputs.working_directory }}/build/ios/ipa/*.ipa
           if-no-files-found: warn
 
       - name: Summarize matrix stage

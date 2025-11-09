@@ -27,7 +27,7 @@ jobs:
       flutter_version: '3.24.0'
       flutter_channel: 'stable'
       working_directory: 'mobile'
-      build_targets: ''
+      build_targets: 'android,ios,web'
 
   bun_ci:
     uses: ./.github/workflows/reusable-bun-ci.yml
