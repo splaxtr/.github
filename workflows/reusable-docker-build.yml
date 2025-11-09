@@ -1,9 +1,23 @@
-# Reusable Docker build workflow that builds/pushes GHCR images with caching and metadata.
+# -----------------------------------------------------------------------------
+# Reusable Docker Build Workflow
+# Purpose: build/push GHCR images with caching and metadata
+# Usage:
+#   uses: splaxtr/.github/.github/workflows/reusable-docker-build.yml@main
+#   with:
+#     docker_context: backend
+#     push_image: true
+# Outputs:
+#   status: job result (success|failure)
+# -----------------------------------------------------------------------------
 name: ♻️ Reusable Docker Build
 
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.docker.result }}
     inputs:
       docker_context:
         description: "Build context"
@@ -53,6 +67,22 @@ jobs:
           IMAGE="ghcr.io/${{ github.repository }}"
           echo "name=${IMAGE,,}" >> $GITHUB_OUTPUT
 
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/docker
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
+
+      - name: Cache Buildx artifacts
+        uses: actions/cache@v4
+        with:
+          path: ~/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -90,8 +120,28 @@ jobs:
             BUILD_REF=${{ github.ref_name }}
             ${{ inputs.build_args }}
 
+      - name: Save build log
+        run: |
+          {
+            echo "Image: ${{ steps.image.outputs.name }}"
+            echo "Tags:"
+            echo "${{ steps.meta.outputs.tags }}"
+            echo "Pushed: ${{ inputs.push_image }}"
+          } > build-summary.txt
+
+      - name: Upload build summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.workflow }}-${{ github.job }}-${{ github.sha }}
+          path: build-summary.txt
+          if-no-files-found: warn
+
       - name: Summarize build
         run: |
           echo "### Docker build" >> $GITHUB_STEP_SUMMARY
           echo "- Image: ${{ steps.image.outputs.name }}" >> $GITHUB_STEP_SUMMARY
           echo "- Tags: ${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Expose status output
+        if: always()
+        run: echo "status=${{ job.status }}" >> $GITHUB_OUTPUT

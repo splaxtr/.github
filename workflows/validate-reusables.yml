@@ -149,8 +149,8 @@ jobs:
           - flutter_ci: ${{ needs.flutter_ci.result }}
           - bun_ci: ${{ needs.bun_ci.result }}
           - go_ci: ${{ needs.go_ci.result }}
-          - docker_build: ${{ needs.docker_build.result }}
-          - deploy_pipeline: ${{ needs.deploy_pipeline.result }}
+          - docker_build: ${{ needs.docker_build.outputs.status || needs.docker_build.result }}
+          - deploy_pipeline: ${{ needs.deploy_pipeline.outputs.status || needs.deploy_pipeline.result }}
           - monorepo_ci: ${{ needs.monorepo_ci.result }}
           - metrics_ci: ${{ needs.metrics_ci.result }}
           - security_ci: ${{ needs.security_ci.result }}

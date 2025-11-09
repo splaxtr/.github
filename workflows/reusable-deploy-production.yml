@@ -1,9 +1,23 @@
-# Reusable multi-service deploy workflow orchestrating backend, frontend, mobile, and bots releases.
+# -----------------------------------------------------------------------------
+# Reusable Deploy Workflow
+# Purpose: orchestrate backend/frontend/mobile/bot deployments with summaries
+# Usage:
+#   uses: splaxtr/.github/.github/workflows/reusable-deploy-production.yml@main
+#   with:
+#     environment: production
+#     changed_services: backend,frontend
+# Outputs:
+#   status: job result (success|failure) from final summary
+# -----------------------------------------------------------------------------
 name: ♻️ Reusable Deploy Pipeline
 
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.summary.result }}
     inputs:
       environment:
         description: "GitHub environment / target stage"
@@ -111,6 +125,22 @@ jobs:
           echo "- Services: ${{ steps.detect.outputs.services || 'none' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Forced: ${{ inputs.force_deploy }}" >> $GITHUB_STEP_SUMMARY
 
+      - name: Save plan summary artifact
+        run: |
+          cat <<EOF > plan-summary.txt
+Environment: ${{ inputs.environment }}
+Services: ${{ steps.detect.outputs.services || 'none' }}
+Forced: ${{ inputs.force_deploy }}
+EOF
+        shell: bash
+
+      - name: Upload plan summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.workflow }}-plan-${{ github.sha }}
+          path: plan-summary.txt
+          if-no-files-found: warn
+
   backend:
     name: 🐹 Backend
     needs: plan
@@ -132,7 +162,9 @@ jobs:
           path: |
             ~/.cache/go-build
             ${{ inputs.docker_context }}/bin
-          key: backend-${{ runner.os }}-${{ hashFiles(format('{0}/go.sum', inputs.docker_context)) }}
+          key: ${{ runner.os }}-go-backend-${{ inputs.go_version }}-${{ hashFiles(format('{0}/go.sum', inputs.docker_context)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-backend-
 
       - name: Run tests
         working-directory: ${{ inputs.docker_context }}
@@ -182,7 +214,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: frontend/node_modules
-          key: frontend-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+          key: ${{ runner.os }}-node-frontend-${{ inputs.node_version }}-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-frontend-
 
       - name: Install & test
         working-directory: frontend
@@ -228,7 +262,9 @@ jobs:
           path: |
             ~/.pub-cache
             mobile/.dart_tool
-          key: mobile-${{ runner.os }}-${{ hashFiles('mobile/pubspec.lock') }}
+          key: ${{ runner.os }}-flutter-mobile-${{ inputs.flutter_version }}-${{ hashFiles('mobile/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-mobile-
 
       - name: Test & build artifacts
         working-directory: mobile
@@ -241,7 +277,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mobile-build-${{ github.sha }}
+          name: ${{ github.workflow }}-mobile-${{ github.sha }}
           path: |
             mobile/build/app/outputs/flutter-apk/*.apk
             mobile/build/ios/ipa
@@ -267,12 +303,32 @@ jobs:
           cache: npm
           cache-dependency-path: bots/node/package-lock.json
 
+      - name: Cache bot node_modules
+        if: ${{ matrix.runtime == 'node' }}
+        uses: actions/cache@v4
+        with:
+          path: bots/node/node_modules
+          key: ${{ runner.os }}-node-bots-${{ inputs.node_version }}-${{ hashFiles('bots/node/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-bots-
+
       - name: Setup Python runtime
         if: ${{ matrix.runtime == 'python' }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python_version }}
           cache: pip
+
+      - name: Cache bot python deps
+        if: ${{ matrix.runtime == 'python' }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            bots/python/.venv
+            bots/python/.cache/pip
+          key: ${{ runner.os }}-python-bots-${{ inputs.python_version }}-${{ hashFiles('bots/python/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-bots-
 
       - name: Install bot dependencies
         run: |
@@ -339,3 +395,23 @@ jobs:
           echo "- Mobile: ${{ needs.mobile.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Bots: ${{ needs.bots.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Smoke: ${{ needs['smoke-tests'].result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "Environment: ${{ inputs.environment }}"
+            echo "Services: ${{ needs.plan.outputs.services }}"
+            echo "Backend: ${{ needs.backend.result || 'skipped' }}"
+            echo "Frontend: ${{ needs.frontend.result || 'skipped' }}"
+            echo "Mobile: ${{ needs.mobile.result || 'skipped' }}"
+            echo "Bots: ${{ needs.bots.result || 'skipped' }}"
+            echo "Smoke: ${{ needs['smoke-tests'].result || 'skipped' }}"
+          } > deploy-summary.txt
+
+      - name: Upload deployment log
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.workflow }}-deploy-${{ github.sha }}
+          path: deploy-summary.txt
+          if-no-files-found: warn
+
+      - name: Expose status output
+        if: always()
+        run: echo "status=${{ job.status }}" >> $GITHUB_OUTPUT
