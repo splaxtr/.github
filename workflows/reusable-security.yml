@@ -1,106 +1,115 @@
-name: ♻️ Reusable Security CI
+# Reusable Security workflow combining npm audit, Trivy scans, and CodeQL analysis.
+name: ♻️ Reusable Security Scan
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
       working-directory:
-        description: "Directory of the project"
-        required: false
-        default: "."
-      language:
-        description: "Project language (node, python, go, flutter, bun)"
-        required: true
         type: string
-      docker-build:
-        description: "Run security checks inside Docker"
-        required: false
+        default: "."
+      node_version:
+        type: string
+        default: "20.x"
+      trivy_target:
+        type: string
+        default: "."
+      codeql_languages:
+        type: string
+        default: "javascript"
+      npm_audit:
+        type: boolean
         default: true
-    secrets:
-      SNYK_TOKEN:
-        required: false
-      PYPI_TOKEN:
-        required: false
-      NPM_TOKEN:
-        required: false
+      run_trivy:
+        type: boolean
+        default: true
+      run_codeql:
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   security:
-    name: 🔐 Security Scan (${{ inputs.language }})
+    name: 🔐 Security suite
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
     defaults:
       run:
+        shell: bash
         working-directory: ${{ inputs.working-directory }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker
-        if: ${{ inputs.docker-build == 'true' }}
-        uses: docker/setup-buildx-action@v3
-
-      # --------------------------
-      # Node.js / Bun.js Security
-      - name: Node / Bun Security
-        if: ${{ inputs.language == 'node' || inputs.language == 'bun' }}
-        run: |
-          if [ -f package.json ]; then
-            echo "🔍 Running npm audit..."
-            npm install
-            npm audit --audit-level=moderate || true
-          fi
-          echo "🔍 Running Snyk scan..."
-          if [ -n "${{ secrets.SNYK_TOKEN }}" ]; then
-            snyk auth ${{ secrets.SNYK_TOKEN }}
-            snyk test --severity-threshold=high || true
-          fi
-
-      # --------------------------
-      # Python Security
-      - name: Python Security
-        if: ${{ inputs.language == 'python' }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install safety || true
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-            safety check -r requirements.txt || true
-          fi
-
-      # --------------------------
-      # Go Security
-      - name: Go Security
-        if: ${{ inputs.language == 'go' }}
-        run: |
-          echo "🔍 Running Go vulnerability scan..."
-          go install golang.org/x/vuln/cmd/govulncheck@latest
-          govulncheck ./... || true
-
-      # --------------------------
-      # Flutter Security
-      - name: Flutter Security
-        if: ${{ inputs.language == 'flutter' }}
-        run: |
-          echo "🔍 Flutter security checks..."
-          flutter pub get
-          flutter pub outdated || true
-          # Note: Flutter does not have a native security audit tool yet
-
-      # --------------------------
-      # Docker Security Scan
-      - name: Docker Image Scan
-        if: ${{ inputs.docker-build == 'true' }}
-        run: |
-          echo "🐳 Building Docker image for security scan..."
-          docker build -t security-scan:${{ github.sha }} .
-          echo "🔍 Running Trivy scan..."
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image security-scan:${{ github.sha }}
-
-      # --------------------------
-      # Upload security reports
-      - name: Upload security report
-        if: always()
-        uses: actions/upload-artifact@v4
+      - uses: actions/checkout@v4
         with:
-          name: security-report-${{ github.sha }}
-          path: ${{ inputs.working-directory }}/security-report/
+          fetch-depth: 0
+
+      - name: Setup Node.js (for npm audit)
+        if: ${{ inputs.npm_audit }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+      - name: Cache npm
+        if: ${{ inputs.npm_audit }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ${{ inputs.working-directory }}/node_modules
+          key: security-npm-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) }}
+
+      - name: npm audit
+        if: ${{ inputs.npm_audit }}
+        run: |
+          if [ -f package-lock.json ] || [ -f bun.lockb ] || [ -f pnpm-lock.yaml ]; then
+            npm install --ignore-scripts --no-audit
+            npm audit --audit-level=moderate
+          else
+            echo "No Node lockfile found; skipping npm audit"
+          fi
+
+      - name: Trivy filesystem scan
+        if: ${{ inputs.run_trivy }}
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: ${{ inputs.trivy_target }}
+          format: sarif
+          output: trivy-results.sarif
+
+      - name: Upload Trivy results
+        if: ${{ inputs.run_trivy }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      - name: Initialize CodeQL
+        if: ${{ inputs.run_codeql }}
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ inputs.codeql_languages }}
+
+      - name: Autobuild
+        if: ${{ inputs.run_codeql }}
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Analyze
+        if: ${{ inputs.run_codeql }}
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "security"
+
+      - name: Summary
+        run: |
+          echo "### Security scans" >> $GITHUB_STEP_SUMMARY
+          echo "- npm audit: ${{ inputs.npm_audit }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Trivy: ${{ inputs.run_trivy }}" >> $GITHUB_STEP_SUMMARY
+          echo "- CodeQL: ${{ inputs.run_codeql }}" >> $GITHUB_STEP_SUMMARY

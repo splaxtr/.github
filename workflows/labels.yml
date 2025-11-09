@@ -1,146 +1,90 @@
-name: 🏷️ Etiketleri Senkronize Et
+# Reusable label sync workflow to keep issue/PR labels in sync across repositories.
+name: ♻️ Reusable Label Sync
 
 on:
-  push:
-    branches: [main]
-    paths: 
-      - '.github/labels.yml'
-      - '.github/workflows/labels.yml'
   workflow_dispatch:
+  workflow_call:
     inputs:
-      dry-run:
-        description: 'Test modunda çalıştır (değişiklik yapma)'
-        required: false
-        default: false
+      labels_file:
+        type: string
+        default: ".github/labels.yml"
+      dry_run:
         type: boolean
+        default: false
+      collect_stats:
+        type: boolean
+        default: true
 
-env:
-  LABELS_FILE: '.github/labels.yml'
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
-  sync-labels:
-    name: 🔄 Etiketleri Senkronize Et
+  sync:
+    name: 🔄 Sync labels
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       issues: write
       pull-requests: write
-    # Job seviyesinde timeout
-    timeout-minutes: 10
-    
     steps:
-      - name: 📥 Repository'yi Çek
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🏷️ GitHub Etiketlerini Senkronize Et
+      - name: Apply labels
         uses: crazy-max/ghaction-github-labeler@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          yaml-file: ${{ env.LABELS_FILE }}
+          yaml-file: ${{ inputs.labels_file }}
           skip-delete: false
-          dry-run: ${{ github.event.inputs.dry-run || false }}
-          exclude: |
-            .github/**/*
-            README.md
-            LICENSE
+          dry-run: ${{ inputs.dry_run }}
 
-      - name: 📊 Etiket Durumunu Kontrol Et
-        if: always()
+      - name: Summary
         run: |
-          echo "## 🏷️ Etiket Senkronizasyon Durumu" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Çalışma Modu:** ${{ github.event.inputs.dry-run && 'Dry Run (Test)' || 'Production' }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Etiket Dosyası:** ${{ env.LABELS_FILE }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Repository:** ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ job.status }}" = "success" ]; then
-            echo "✅ **Durum:** Başarılı" >> $GITHUB_STEP_SUMMARY
-            if [ "${{ github.event.inputs.dry-run }}" = "true" ]; then
-              echo "ℹ️ Dry run modunda çalıştırıldı - gerçek değişiklik yapılmadı" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "🎉 Etiketler başarıyla senkronize edildi" >> $GITHUB_STEP_SUMMARY
-            fi
-          else
-            echo "❌ **Durum:** Başarısız" >> $GITHUB_STEP_SUMMARY
-            echo "Hata detayları için logları kontrol edin" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "### Label sync" >> $GITHUB_STEP_SUMMARY
+          echo "- File: ${{ inputs.labels_file }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Dry run: ${{ inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
 
-  # Etiket kullanım istatistiklerini topla
-  label-stats:
-    name: 📈 Etiket İstatistikleri
+  stats:
+    name: 📈 Label stats
+    needs: sync
+    if: ${{ inputs.collect_stats && !inputs.dry_run }}
     runs-on: ubuntu-latest
-    needs: sync-labels
-    if: always() && !github.event.inputs.dry-run
-    timeout-minutes: 5
-    
     steps:
-      - name: 📥 Repository'yi Çek
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 📊 Etiket İstatistiklerini Topla
+      - name: Collect stats
         run: |
-          echo "## 📊 Etiket İstatistikleri" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          # Toplam etiket sayısını hesapla
-          TOTAL_LABELS=$(grep -c "^- name:" ${{ env.LABELS_FILE }} || true)
-          echo "**Toplam Etiket Sayısı:** $TOTAL_LABELS" >> $GITHUB_STEP_SUMMARY
-          
-          # Kategori bazlı sayılar
-          echo "**Kategori Dağılımı:**" >> $GITHUB_STEP_SUMMARY
-          TYPE_LABELS=$(grep -c "type:" ${{ env.LABELS_FILE }} || true)
-          PRIORITY_LABELS=$(grep -c "priority:" ${{ env.LABELS_FILE }} || true)
-          STATUS_LABELS=$(grep -c "status:" ${{ env.LABELS_FILE }} || true)
-          COMPONENT_LABELS=$(grep -c "component:" ${{ env.LABELS_FILE }} || true)
-          
-          echo "- 🎫 Type: $TYPE_LABELS" >> $GITHUB_STEP_SUMMARY
-          echo "- 🚨 Priority: $PRIORITY_LABELS" >> $GITHUB_STEP_SUMMARY
-          echo "- 📈 Status: $STATUS_LABELS" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔧 Component: $COMPONENT_LABELS" >> $GITHUB_STEP_SUMMARY
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "⏰ **Son Güncelleme:** $(date +'%d.%m.%Y %H:%M')" >> $GITHUB_STEP_SUMMARY
+          TOTAL=$(grep -c "^- name:" ${{ inputs.labels_file }} || true)
+          echo "### Label stats" >> $GITHUB_STEP_SUMMARY
+          echo "- Total labels: $TOTAL" >> $GITHUB_STEP_SUMMARY
 
-  # Etiket doğrulama
-  validate-labels:
-    name: ✅ Etiket Doğrulama
+  validate:
+    name: ✅ Validate YAML
+    needs: sync
     runs-on: ubuntu-latest
-    if: always()
-    timeout-minutes: 5
-    
     steps:
-      - name: 📥 Repository'yi Çek
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🔍 Etiket Yapılandırmasını Doğrula
+      - name: Install validator deps
+        run: pip install pyyaml
+
+      - name: Validate schema
         run: |
-          echo "## ✅ Etiket Doğrulama" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          # YAML syntax kontrolü
-          if python3 -c "import yaml; yaml.safe_load(open('${{ env.LABELS_FILE }}'))"; then
-            echo "✅ YAML Syntax: Geçerli" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ YAML Syntax: Hatalı" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-          
-          # Gerekli alanları kontrol et
-          if grep -q "name:" ${{ env.LABELS_FILE }} && grep -q "color:" ${{ env.LABELS_FILE }}; then
-            echo "✅ Gerekli Alanlar: Mevcut" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Gerekli Alanlar: Eksik" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-          
-          # Renk formatı kontrolü
-          INVALID_COLORS=$(grep "color:" ${{ env.LABELS_FILE }} | grep -vE "color: \"[0-9a-fA-F]{6}\"" | wc -l || true)
-          if [ "$INVALID_COLORS" -eq 0 ]; then
-            echo "✅ Renk Formatı: Geçerli" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Renk Formatı: Hatalı - $INVALID_COLORS geçersiz renk" >> $GITHUB_STEP_SUMMARY
-          fi
+          python - <<'PY'
+import sys, yaml
+path = "${{ inputs.labels_file }}"
+try:
+    with open(path, 'r', encoding='utf-8') as fh:
+        data = yaml.safe_load(fh)
+    if not isinstance(data, list):
+        raise ValueError('Labels file must be a list of entries')
+    missing = [item for item in data if 'name' not in item or 'color' not in item]
+    if missing:
+        raise ValueError('Some labels are missing name/color fields')
+    print('Labels YAML validated successfully')
+except Exception as exc:
+    print(f'Validation failed: {exc}')
+    sys.exit(1)
+PY

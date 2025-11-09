@@ -1,6 +1,8 @@
+# Reusable Metrics workflow that gathers LOC, coverage, file counts, and renders SVG summaries.
 name: ♻️ Reusable Metrics CI
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
       working-directory:
@@ -17,6 +19,10 @@ on:
         required: false
         default: ""
         type: string
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   collect-metrics:

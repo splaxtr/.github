@@ -1,0 +1,10 @@
+{
+  "name": "docker-sample",
+  "version": "1.0.0",
+  "description": "Sample app for Docker workflow",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "license": "MIT"
+}

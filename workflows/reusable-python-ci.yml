@@ -1,104 +1,122 @@
-name: ♻️ Reusable Python CI Workflow
+# Reusable Python CI workflow for linting, formatting, testing, and packaging Python projects.
+name: ♻️ Reusable Python CI
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
-      python-version:
-        description: "Python version to use (default: 3.11)"
+      python_version:
+        description: "Python version to install"
         required: false
+        type: string
         default: "3.11"
-      working-directory:
-        description: "Directory where the Python project is located"
+      working_directory:
+        description: "Directory that contains the Python project"
         required: false
+        type: string
         default: "."
-      run-tests:
-        description: "Run tests (true/false)"
+      lint_command:
+        description: "Lint command"
         required: false
+        type: string
+        default: "ruff check ."
+      format_command:
+        description: "Formatter command that runs in check mode"
+        required: false
+        type: string
+        default: "black --check ."
+      test_command:
+        description: "Pytest command (or any test runner)"
+        required: false
+        type: string
+        default: "pytest --maxfail=1 --disable-warnings --cov=. --cov-report=xml"
+      coverage_file:
+        description: "Coverage artifact path"
+        required: false
+        type: string
+        default: "coverage.xml"
+      run_tests:
+        description: "Toggle test execution"
+        required: false
+        type: boolean
         default: true
-      docker-build:
-        description: "Build and test inside Docker (true/false)"
+      upload_artifacts:
+        description: "Upload .pytest_cache and coverage files"
         required: false
+        type: boolean
         default: true
-    secrets:
-      PYPI_TOKEN:
-        required: false
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   python-ci:
-    name: Python CI (${{ inputs.working-directory }})
+    name: Python build + test pipeline
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ inputs.working-directory }}
+        shell: bash
+        working-directory: ${{ inputs.working_directory }}
 
     steps:
-      # 🧹 1. Kaynak Kodun İndirilmesi
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🧱 2. Python Kurulumu
-      - name: Setup Python ${{ inputs.python-version }}
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ inputs.python-version }}
-          cache: "pip"
+          python-version: ${{ inputs.python_version }}
+          cache: pip
 
-      # 📦 3. Gerekli Bağımlılıkların Kurulumu
+      - name: Cache virtual environment
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ inputs.working_directory }}/.venv
+            ${{ inputs.working_directory }}/.pytest_cache
+          key: ${{ runner.os }}-python-${{ inputs.python_version }}-${{ hashFiles(format('{0}/requirements*.txt', inputs.working_directory)) }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ inputs.python_version }}-
+            ${{ runner.os }}-python-
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest black ruff
+          if find . -maxdepth 1 -name "requirements*.txt" | grep -q .; then
+            pip install -r requirements.txt || true
+            for file in requirements-dev.txt requirements-ci.txt; do
+              if [ -f "$file" ]; then
+                pip install -r "$file"
+              fi
+            done
+          fi
+          pip install pytest coverage ruff black
 
-      # 🧹 4. Kod Kalitesi Kontrolleri
-      - name: Run lint and format checks
-        run: |
-          echo "🔍 Running code checks..."
-          ruff check .
-          black --check .
+      - name: Run formatter checks
+        run: ${{ inputs.format_command }}
 
-      # 🧪 5. Testlerin Çalıştırılması
-      - name: Run pytest
-        if: ${{ inputs.run-tests == 'true' }}
-        run: |
-          echo "🧪 Running tests..."
-          pytest -v --maxfail=3 --disable-warnings --cov=. --cov-report=term-missing
+      - name: Run lint
+        run: ${{ inputs.lint_command }}
 
-      # 🐳 6. Docker Image Oluşturma
-      - name: Build Docker image
-        if: ${{ inputs.docker-build == 'true' }}
-        run: |
-          echo "🐳 Building Docker image..."
-          docker build -t example-python:${{ github.sha }} .
+      - name: Run tests
+        if: ${{ inputs.run_tests }}
+        run: ${{ inputs.test_command }}
 
-      # 🧾 7. Docker Container Testi
-      - name: Test Docker container
-        if: ${{ inputs.docker-build == 'true' }}
-        run: |
-          echo "✅ Verifying Docker container..."
-          docker run --rm example-python:${{ github.sha }} python --version
+      - name: Upload artifacts
+        if: ${{ inputs.upload_artifacts }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-artifacts-${{ github.sha }}
+          path: |
+            ${{ inputs.working_directory }}/.pytest_cache
+            ${{ inputs.working_directory }}/${{ inputs.coverage_file }}
+          if-no-files-found: warn
 
-      # 📤 8. Test Raporlarının Kaydedilmesi
-      - name: Upload test reports
+      - name: Summarize job
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pytest-report-${{ github.sha }}
-          path: .pytest_cache/
-
-      # 📦 9. Build Artifacts
-      - name: Upload build artifacts
-        if: ${{ always() && hashFiles('dist/**') != '' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-build-${{ github.sha }}
-          path: dist/
-
-      # 🧾 10. Özet Bilgi
-      - name: Build Summary
         run: |
-          echo "✅ Python Version: $(python --version)"
-          echo "📦 Installed Packages:"
-          pip list
-          echo "📍 Working Directory: ${{ inputs.working-directory }}"
-          echo "🏁 CI pipeline completed successfully."
+          echo "### Python CI" >> $GITHUB_STEP_SUMMARY
+          echo "- Python version: ${{ inputs.python_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Working directory: ${{ inputs.working_directory }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Tests executed: ${{ inputs.run_tests }}" >> $GITHUB_STEP_SUMMARY

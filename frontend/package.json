@@ -1,0 +1,10 @@
+{
+  "name": "frontend-sample",
+  "version": "1.0.0",
+  "description": "Sample frontend app for workflow validation",
+  "scripts": {
+    "build": "node src/index.js",
+    "test": "node src/index.js"
+  },
+  "license": "MIT"
+}

@@ -1,89 +1,149 @@
-name: Reusable Node.js CI Workflow
+# Reusable Node CI workflow used to lint, test, and build Node.js/Bun-style apps across repos.
+name: ♻️ Reusable Node CI
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
-      node-version:
-        description: "Node.js version to use"
+      node_version:
+        description: "Node.js version to install"
         required: false
         type: string
         default: "20.x"
-      working-directory:
-        description: "Directory to run the workflow in"
+      working_directory:
+        description: "Directory that contains the Node project"
         required: false
         type: string
         default: "."
-      run-tests:
-        description: "Run tests (true/false)"
+      package_manager:
+        description: "Package manager to use (npm | yarn | pnpm)"
+        required: false
+        type: string
+        default: "npm"
+      lockfile:
+        description: "Dependency lockfile used for caching"
+        required: false
+        type: string
+        default: "package-lock.json"
+      build_command:
+        description: "Build command executed during the build matrix stage"
+        required: false
+        type: string
+        default: "npm run build"
+      test_command:
+        description: "Test command executed during the test matrix stage"
+        required: false
+        type: string
+        default: "npm test"
+      run_tests:
+        description: "Toggle to skip the test stage"
         required: false
         type: boolean
         default: true
-
-    secrets:
-      NPM_TOKEN:
-        description: "NPM token for authentication"
+      artifact_path:
+        description: "Path that should be uploaded after build"
         required: false
+        type: string
+        default: "dist"
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   node-ci:
-    name: Node.js CI
+    name: Node pipeline matrix (${{ matrix.stage }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stage: [test, build]
     defaults:
       run:
-        working-directory: ${{ inputs.working-directory }}
+        shell: bash
+        working-directory: ${{ inputs.working_directory }}
 
     steps:
-      # 🧹 Checkout repository
+      # ----------------------------
+      # Checkout & toolchain setup
+      # ----------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🧱 Setup Node.js
-      - name: Setup Node.js ${{ inputs.node-version }}
+      - name: Enable corepack (yarn/pnpm)
+        if: ${{ inputs.package_manager != 'npm' }}
+        run: corepack enable
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ inputs.node-version }}
-          cache: "npm"
-          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
+          cache-dependency-path: ${{ format('{0}/{1}', inputs.working_directory, inputs.lockfile) }}
 
-      # 🔐 Configure npm for private packages
-      - name: Setup NPM authentication
-        if: ${{ secrets.NPM_TOKEN != '' }}
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/yarn
+            ~/.pnpm-store
+            ${{ inputs.working_directory }}/node_modules
+          key: ${{ runner.os }}-node-${{ inputs.node_version }}-${{ hashFiles(format('{0}/{1}', inputs.working_directory, inputs.lockfile)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ inputs.node_version }}-
+            ${{ runner.os }}-node-
 
-      # 📦 Install dependencies
+      # ----------------------------
+      # Install dependencies once
+      # ----------------------------
       - name: Install dependencies
-        run: npm ci
+        run: |
+          case "${{ inputs.package_manager }}" in
+            npm)
+              npm ci
+              ;;
+            yarn)
+              yarn install --frozen-lockfile
+              ;;
+            pnpm)
+              pnpm install --frozen-lockfile
+              ;;
+            *)
+              echo "Unsupported package manager: ${{ inputs.package_manager }}" && exit 1
+              ;;
+          esac
+        env:
+          HUSKY: 0
 
-      # 🧪 Run tests
+      # ----------------------------
+      # Test matrix stage
+      # ----------------------------
       - name: Run tests
-        if: ${{ inputs.run-tests == 'true' }}
-        run: npm test
+        if: ${{ matrix.stage == 'test' && inputs.run_tests }}
+        run: ${{ inputs.test_command }}
 
-      # 🏗️ Build project
+      # ----------------------------
+      # Build matrix stage
+      # ----------------------------
       - name: Build project
-        run: npm run build --if-present
+        if: ${{ matrix.stage == 'build' }}
+        run: ${{ inputs.build_command }}
 
-      # 🐳 Docker build and test
-      - name: Build Docker image
-        run: |
-          docker build -t example-node:${{ github.sha }} .
-
-      - name: Test Docker container
-        run: |
-          docker run --rm example-node:${{ github.sha }} node -v
-
-      # 📤 Upload build artifacts (if any)
-      - name: Upload build artifacts
-        if: ${{ always() && hashFiles('dist/**') != '' }}
+      - name: Upload build artifact
+        if: ${{ matrix.stage == 'build' && inputs.artifact_path != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: node-build-${{ github.sha }}
-          path: dist/
+          path: ${{ inputs.working_directory }}/${{ inputs.artifact_path }}
+          if-no-files-found: warn
 
-      # 🧾 Summary
-      - name: Build Summary
+      # ----------------------------
+      # Matrix-specific summary
+      # ----------------------------
+      - name: Append run summary
         run: |
-          echo "✅ Node.js version: $(node -v)"
-          echo "📦 NPM version: $(npm -v)"
-          echo "🏗️ Build completed for ${{ inputs.working-directory }}"
+          echo "### Node matrix: ${{ matrix.stage }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Node version: ${{ inputs.node_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Package manager: ${{ inputs.package_manager }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Working directory: ${{ inputs.working_directory }}" >> $GITHUB_STEP_SUMMARY

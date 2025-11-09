@@ -1,0 +1,167 @@
+# Validation workflow to execute every reusable workflow with sample inputs.
+name: Validate Reusable Workflows
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  node_ci:
+    uses: ./.github/workflows/reusable-node-ci.yml
+    with:
+      node_version: '20.x'
+      working_directory: 'frontend'
+      package_manager: 'npm'
+      artifact_path: 'src'
+
+  python_ci:
+    uses: ./.github/workflows/reusable-python-ci.yml
+    with:
+      python_version: '3.11'
+      working_directory: 'bots/python'
+      coverage_file: 'coverage.xml'
+
+  flutter_ci:
+    uses: ./.github/workflows/reusable-flutter-ci.yml
+    with:
+      flutter_version: '3.24.0'
+      flutter_channel: 'stable'
+      working_directory: 'mobile'
+      build_targets: ''
+
+  bun_ci:
+    uses: ./.github/workflows/reusable-bun-ci.yml
+    with:
+      bun_version: '1.0.0'
+      working_directory: 'bun-app'
+      run_e2e_tests: false
+
+  go_ci:
+    uses: ./.github/workflows/reusable-go-ci.yml
+    with:
+      go_version: '1.22.x'
+      working_directory: 'backend'
+      docker_context: 'backend'
+      build_image: false
+
+  docker_build:
+    uses: ./.github/workflows/reusable-docker-build.yml
+    with:
+      docker_context: 'docker'
+      dockerfile: 'Dockerfile'
+      push_image: false
+
+  deploy_pipeline:
+    uses: ./.github/workflows/reusable-deploy-production.yml
+    with:
+      environment: 'development'
+      changed_services: 'backend,frontend,mobile,bots'
+      node_version: '20'
+      python_version: '3.11'
+      go_version: '1.22.x'
+      flutter_version: '3.24.0'
+      flutter_channel: 'stable'
+      docker_context: 'backend'
+      run_smoke_tests: false
+
+  monorepo_ci:
+    uses: ./.github/workflows/reusable-monorepo-ci.yml
+    with:
+      node_version: '20.x'
+      node_path: 'frontend'
+      bun_version: '1.0.0'
+      bun_path: 'bun-app'
+      python_version: '3.11'
+      python_path: 'bots/python'
+      go_version: '1.22.x'
+      go_path: 'backend'
+      flutter_version: '3.24.0'
+      flutter_channel: 'stable'
+      flutter_path: 'mobile'
+
+  metrics_ci:
+    uses: ./.github/workflows/reusable-metrics-ci.yml
+    with:
+      working-directory: 'frontend'
+      language: 'node'
+      coverage-file: ''
+
+  security_ci:
+    uses: ./.github/workflows/reusable-security.yml
+    with:
+      working-directory: '.'
+      npm_audit: false
+      run_trivy: false
+      run_codeql: false
+
+  labels_sync:
+    uses: ./.github/workflows/labels.yml
+    with:
+      labels_file: '.github/labels.yml'
+      dry_run: true
+      collect_stats: false
+
+  release_drafter:
+    uses: ./.github/workflows/release-drafter.yml
+    with:
+      config_path: '.github/release-drafter.yml'
+
+  composite_ci:
+    uses: ./.github/workflows/ci-lint.yml
+    with:
+      node_working_directory: 'frontend'
+      python_working_directory: 'bots/python'
+      go_working_directory: 'backend'
+      flutter_working_directory: 'mobile'
+      bun_enabled: true
+      bun_working_directory: 'bun-app'
+      docker_context: '.'
+
+  aggregate:
+    name: Collect Validation Artifacts
+    runs-on: ubuntu-latest
+    needs:
+      - node_ci
+      - python_ci
+      - flutter_ci
+      - bun_ci
+      - go_ci
+      - docker_build
+      - deploy_pipeline
+      - monorepo_ci
+      - metrics_ci
+      - security_ci
+      - labels_sync
+      - release_drafter
+      - composite_ci
+    if: always()
+    steps:
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          path: validation-artifacts
+      - name: Summarize job results
+        run: |
+          cat <<'REPORT' > validation-report.txt
+          # Reusable Workflow Validation Results
+          - node_ci: ${{ needs.node_ci.result }}
+          - python_ci: ${{ needs.python_ci.result }}
+          - flutter_ci: ${{ needs.flutter_ci.result }}
+          - bun_ci: ${{ needs.bun_ci.result }}
+          - go_ci: ${{ needs.go_ci.result }}
+          - docker_build: ${{ needs.docker_build.result }}
+          - deploy_pipeline: ${{ needs.deploy_pipeline.result }}
+          - monorepo_ci: ${{ needs.monorepo_ci.result }}
+          - metrics_ci: ${{ needs.metrics_ci.result }}
+          - security_ci: ${{ needs.security_ci.result }}
+          - labels_sync: ${{ needs.labels_sync.result }}
+          - release_drafter: ${{ needs.release_drafter.result }}
+          - composite_ci: ${{ needs.composite_ci.result }}
+          REPORT
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reusable-validation-report
+          path: |
+            validation-report.txt
+            validation-artifacts
+          if-no-files-found: warn

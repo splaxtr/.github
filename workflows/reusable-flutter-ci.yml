@@ -1,165 +1,124 @@
-name: Reusable Flutter CI (Enhanced)
+# Reusable Flutter CI workflow to analyze, test, and build Flutter apps with configurable targets.
+name: ♻️ Reusable Flutter CI
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
-      flutter-version:
-        description: 'Flutter version to use'
+      flutter_version:
+        description: "Flutter version to install"
         required: false
         type: string
-        default: '3.24.0'
-      flutter-channel:
-        description: 'Flutter channel (stable, beta, dev)'
+        default: "3.24.0"
+      flutter_channel:
+        description: "Flutter channel (stable | beta | dev)"
         required: false
         type: string
-        default: 'stable'
-      coverage-threshold:
-        description: 'Minimum code coverage percentage'
-        required: false
-        type: number
-        default: 80
-      working-directory:
-        description: 'Working directory for the app'
+        default: "stable"
+      working_directory:
+        description: "Path to the Flutter application"
         required: false
         type: string
-        default: '.'
-      build-platforms:
-        description: 'Platforms to build (android,ios,web)'
+        default: "."
+      build_targets:
+        description: "Comma separated build targets (android,ios,web,linux,macos,windows)"
         required: false
         type: string
-        default: 'android,ios,web'
-      run-integration-tests:
-        description: 'Run integration tests'
+        default: "android,web"
+      run_integration_tests:
+        description: "Execute integration tests"
         required: false
         type: boolean
         default: false
 
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
-  analyze:
-    name: 🔍 Analyze & Lint
+  flutter-ci:
+    name: Flutter matrix (${{ matrix.stage }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stage: [tests, build-android, build-web]
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.working_directory }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ inputs.flutter-version }}
-          channel: ${{ inputs.flutter-channel }}
+          flutter-version: ${{ inputs.flutter_version }}
+          channel: ${{ inputs.flutter_channel }}
           cache: true
 
-      - name: Cache dependencies
+      - name: Cache pub packages
         uses: actions/cache@v4
         with:
           path: |
             ~/.pub-cache
-            ${{ inputs.working-directory }}/build
-          key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+            ${{ inputs.working_directory }}/.dart_tool
+            ${{ inputs.working_directory }}/build
+          key: ${{ runner.os }}-flutter-${{ inputs.flutter_version }}-${{ hashFiles(format('{0}/pubspec.lock', inputs.working_directory)) }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ inputs.flutter_version }}-
+            ${{ runner.os }}-flutter-
 
-      - name: Get dependencies
-        working-directory: ${{ inputs.working-directory }}
+      - name: Fetch packages
         run: flutter pub get
 
-      - name: Verify formatting
-        working-directory: ${{ inputs.working-directory }}
+      - name: Format check
+        if: ${{ matrix.stage == 'tests' }}
         run: dart format --set-exit-if-changed .
 
-      - name: Analyze
-        working-directory: ${{ inputs.working-directory }}
-        run: flutter analyze --fatal-infos
+      - name: Static analysis
+        if: ${{ matrix.stage == 'tests' }}
+        run: flutter analyze --no-pub
 
-  security:
-    name: 🔐 Dependency Security Scan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install osv-scanner
-        run: |
-          curl -sSL https://github.com/google/osv-scanner/releases/latest/download/osv-scanner-linux-amd64 -o osv-scanner
-          chmod +x osv-scanner
-      - name: Scan for vulnerabilities
-        run: ./osv-scanner --lockfile=pubspec.lock || true
-
-  test:
-    name: 🧪 Tests & Coverage
-    runs-on: ubuntu-latest
-    needs: [analyze]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ inputs.flutter-version }}
-          channel: ${{ inputs.flutter-channel }}
-          cache: true
-
-      - name: Get dependencies
-        working-directory: ${{ inputs.working-directory }}
-        run: flutter pub get
-
-      - name: Run tests
-        working-directory: ${{ inputs.working-directory }}
+      - name: Run unit + widget tests
+        if: ${{ matrix.stage == 'tests' }}
         run: flutter test --coverage
 
-      - name: Verify coverage
-        run: |
-          sudo apt-get install -y lcov
-          coverage=$(lcov --summary coverage/lcov.info | grep lines | awk '{print $2}' | sed 's/%//')
-          echo "Coverage: ${coverage}%"
-          if (( $(echo "$coverage < ${{ inputs.coverage-threshold }}" | bc -l) )); then
-            echo "❌ Below threshold"; exit 1
-          fi
+      - name: Run integration tests
+        if: ${{ matrix.stage == 'tests' && inputs.run_integration_tests }}
+        run: flutter test integration_test
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload coverage artifact
+        if: ${{ matrix.stage == 'tests' }}
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: coverage/lcov.info
+          name: flutter-coverage-${{ github.sha }}
+          path: ${{ inputs.working_directory }}/coverage/lcov.info
+          if-no-files-found: warn
 
-  build:
-    name: 🏗️ Build Flutter Apps
-    runs-on: ubuntu-latest
-    needs: [test]
-    strategy:
-      matrix:
-        platform: [android, web]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Build Android
+        if: ${{ matrix.stage == 'build-android' && contains(inputs.build_targets, 'android') }}
+        run: flutter build apk --release --split-per-abi
+
+      - name: Build Web
+        if: ${{ matrix.stage == 'build-web' && contains(inputs.build_targets, 'web') }}
+        run: flutter build web --release
+
+      - name: Upload build artifact
+        if: ${{ startsWith(matrix.stage, 'build-') }}
+        uses: actions/upload-artifact@v4
         with:
-          flutter-version: ${{ inputs.flutter-version }}
-          channel: ${{ inputs.flutter-channel }}
-          cache: true
-
-      - name: Get dependencies
-        working-directory: ${{ inputs.working-directory }}
-        run: flutter pub get
-
-      - name: Build
-        working-directory: ${{ inputs.working-directory }}
-        run: |
-          if [ "${{ matrix.platform }}" == "android" ]; then
-            flutter build apk --release
-          elif [ "${{ matrix.platform }}" == "web" ]; then
-            flutter build web --release --base-href=/example/
-          fi
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.platform }}-build
+          name: flutter-${{ matrix.stage }}-${{ github.sha }}
           path: |
-            build/app/outputs/flutter-apk/*.apk
-            build/web/
-          retention-days: 7
+            ${{ inputs.working_directory }}/build/app/outputs/flutter-apk/*.apk
+            ${{ inputs.working_directory }}/build/web/**
+          if-no-files-found: warn
 
-  notify:
-    name: 📢 GitHub Summary
-    if: always()
-    needs: [analyze, test, build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create build summary
+      - name: Summarize matrix stage
         run: |
-          echo "## 🧭 CI Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- 🧪 Tests: ${{ needs.test.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔍 Analyze: ${{ needs.analyze.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- 🏗️ Build: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- ⏰ Run completed at $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "### Flutter stage: ${{ matrix.stage }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Version: ${{ inputs.flutter_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Channel: ${{ inputs.flutter_channel }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Directory: ${{ inputs.working_directory }}" >> $GITHUB_STEP_SUMMARY

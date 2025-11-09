@@ -1,147 +1,145 @@
-name: Reusable Go CI
+# Reusable Go CI workflow to format, lint, test, and optionally build/publish Go services.
+name: ♻️ Reusable Go CI
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
-      go-version:
-        description: "Go version to use"
+      go_version:
+        description: "Go version to install"
         required: false
         type: string
         default: "1.22.x"
-
-      working-directory:
-        description: "Working directory for the Go project"
+      working_directory:
+        description: "Directory that contains the Go module"
         required: false
         type: string
         default: "."
-
-      coverage-threshold:
-        description: "Minimum acceptable coverage percentage"
+      coverage_threshold:
+        description: "Minimum coverage percentage"
         required: false
         type: number
         default: 75
-
-      build-binary:
-        description: "Build the Go binary after tests"
+      build_binary:
+        description: "Build and upload the binary"
         required: false
         type: boolean
         default: true
-
-      docker-build:
-        description: "Build Docker image for the Go service"
+      enable_race_detector:
+        description: "Run tests with -race"
+        required: false
+        type: boolean
+        default: true
+      docker_context:
+        description: "Context used for optional Docker builds"
+        required: false
+        type: string
+        default: "."
+      dockerfile:
+        description: "Dockerfile used for optional builds"
+        required: false
+        type: string
+        default: "Dockerfile"
+      build_image:
+        description: "Build container image after tests"
         required: false
         type: boolean
         default: false
 
-      docker-image-name:
-        description: "Docker image name (if docker-build=true)"
-        required: false
-        type: string
-        default: "go-service"
-
-      docker-tag:
-        description: "Docker image tag"
-        required: false
-        type: string
-        default: "latest"
-
-      push-docker:
-        description: "Push Docker image to registry"
-        required: false
-        type: boolean
-        default: false
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   go-ci:
-    name: 🧩 Go CI Pipeline
+    name: Go pipeline
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ inputs.working-directory }}
+        shell: bash
+        working-directory: ${{ inputs.working_directory }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ inputs.go-version }}
+          go-version: ${{ inputs.go_version }}
           cache: true
 
-      - name: Verify Go environment
+      - name: Cache build outputs
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ${{ inputs.working_directory }}/bin
+          key: ${{ runner.os }}-go-${{ inputs.go_version }}-${{ hashFiles(format('{0}/go.sum', inputs.working_directory)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ inputs.go_version }}-
+            ${{ runner.os }}-go-
+
+      - name: Tidy and download modules
         run: |
-          go version
           go env
+          go mod tidy
+          go mod download
 
-      - name: Install dependencies
-        run: go mod download
-
-      - name: Lint code
+      - name: Lint with golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
-          working-directory: ${{ inputs.working-directory }}
+          working-directory: ${{ inputs.working_directory }}
           args: --timeout=5m
 
-      - name: Vet and static check
-        run: |
-          go vet ./...
-          staticcheck ./... || true
-
       - name: Run tests with coverage
-        run: go test ./... -v -coverprofile=coverage.out -covermode=atomic
-
-      - name: Check coverage threshold
         run: |
-          coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
-          echo "Current coverage: ${coverage}%"
-          if (( $(echo "$coverage < ${{ inputs.coverage-threshold }}" | bc -l) )); then
-            echo "❌ Coverage ${coverage}% is below threshold ${{ inputs.coverage-threshold }}%"
-            exit 1
-          else
-            echo "✅ Coverage ${coverage}% meets threshold ${{ inputs.coverage-threshold }}%"
+          TEST_FLAGS="-coverprofile=coverage.out -covermode=atomic"
+          if [ "${{ inputs.enable_race_detector }}" = "true" ]; then
+            TEST_FLAGS="$TEST_FLAGS -race"
           fi
+          go test ./... $TEST_FLAGS -v
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ${{ inputs.working-directory }}/coverage.out
-          flags: go
-          name: go-ci
+      - name: Enforce coverage threshold
+        run: |
+          coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | tr -d '%')
+          echo "Coverage: ${coverage}%"
+          awk -v cov="$coverage" -v min="${{ inputs.coverage_threshold }}" 'BEGIN { if (cov+0 < min+0) { exit 1 } }'
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
-          name: go-coverage
-          path: ${{ inputs.working-directory }}/coverage.out
-          retention-days: 7
+          name: go-coverage-${{ github.sha }}
+          path: ${{ inputs.working_directory }}/coverage.out
+          if-no-files-found: warn
 
       - name: Build binary
-        if: ${{ inputs.build-binary }}
+        if: ${{ inputs.build_binary }}
         run: |
-          go build -o app .
-          echo "✅ Binary built successfully."
+          go build -o bin/app ./...
 
-      - name: Upload binary
-        if: ${{ inputs.build-binary }}
+      - name: Upload binary artifact
+        if: ${{ inputs.build_binary }}
         uses: actions/upload-artifact@v4
         with:
-          name: go-binary
-          path: ${{ inputs.working-directory }}/app
-          retention-days: 7
+          name: go-binary-${{ github.sha }}
+          path: ${{ inputs.working_directory }}/bin/app
+          if-no-files-found: warn
 
-      - name: Build Docker image
-        if: ${{ inputs.docker-build }}
-        run: |
-          echo "🐳 Building Docker image..."
-          docker build -t ${{ inputs.docker-image-name }}:${{ inputs.docker-tag }} .
+      - name: Build container image
+        if: ${{ inputs.build_image }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.docker_context }}
+          file: ${{ inputs.docker_context }}/${{ inputs.dockerfile }}
+          load: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Push Docker image
-        if: ${{ inputs.push-docker }}
-        env:
-          DOCKER_IMAGE: ${{ inputs.docker-image-name }}
-          DOCKER_TAG: ${{ inputs.docker-tag }}
+      - name: Summarize job
         run: |
-          echo "📦 Pushing Docker image to registry..."
-          docker push $DOCKER_IMAGE:$DOCKER_TAG
+          echo "### Go CI" >> $GITHUB_STEP_SUMMARY
+          echo "- Go version: ${{ inputs.go_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage threshold: ${{ inputs.coverage_threshold }}%" >> $GITHUB_STEP_SUMMARY
