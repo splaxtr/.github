@@ -88,6 +88,10 @@ See **[WORKFLOWS_GUIDE.md](./WORKFLOWS_GUIDE.md)** for input details, matrices, 
 - The `validate-reusables.yml` workflow runs on push/dispatch and depends on the sample folders (`frontend`, `backend`, `mobile`, `bun-app`, `bots/node`, `bots/python`, `docker`). Keep them lightweight but functional so changes to workflows get exercised automatically.
 - To test locally, run the same workflows via `act` or trigger `workflow_dispatch` runs in a fork before merging large changes.
 
+## Workflow Validation
+This repository includes a self-lint and validation pipeline (`validate-reusables.yml` + `self-lint.yml`)
+ensuring every reusable workflow is syntactically valid, cached correctly, and exposes outputs as expected.
+
 ## Support & Contact
 - Questions: open a discussion or file a “Question” issue using the provided template.
 - Bugs/features: use the corresponding issue form with as much detail as possible.

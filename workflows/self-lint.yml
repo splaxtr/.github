@@ -1,0 +1,65 @@
+# -----------------------------------------------------------------------------
+# Workflow Self-Lint
+# Purpose: lint workflow YAML files with yamllint and actionlint
+# Usage:
+#   uses: splaxtr/.github/.github/workflows/self-lint.yml@main
+# Outputs:
+#   status: job result (success|failure)
+# -----------------------------------------------------------------------------
+name: ♻️ Workflow Self-Lint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.lint.outputs.status }}
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: 🔍 Lint workflow YAMLs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      status: ${{ steps.set-status.outputs.status }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install yamllint
+
+      - name: Install actionlint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- -b /usr/local/bin latest
+
+      - name: Run linters
+        run: |
+          set -e
+          mkdir -p reports
+          yamllint .github/workflows | tee reports/yamllint.txt
+          actionlint -color | tee reports/actionlint.txt
+          cat reports/yamllint.txt reports/actionlint.txt > reports/self-lint.log
+
+      - name: Upload lint results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.workflow }}-${{ github.job }}-${{ github.sha }}
+          path: reports/self-lint.log
+          if-no-files-found: warn
+
+      - name: Expose status output
+        id: set-status
+        if: always()
+        run: echo "status=${{ job.status }}" >> $GITHUB_OUTPUT

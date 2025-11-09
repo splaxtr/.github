@@ -88,6 +88,10 @@ Detaylı girişler ve sorun giderme notları için **[WORKFLOWS_GUIDE.md](./WORK
 - `validate-reusables.yml` workflow'u push/workflow_dispatch tetiklerinde çalışır ve örnek klasörleri (`frontend`, `backend`, `mobile`, `bun-app`, `bots/node`, `bots/python`, `docker`) kullanarak her yeniden kullanılabilir workflow'u test eder.
 - Yerelde denemek isterseniz aynı workflow'ları `act` ile koşturabilir veya fork üzerinde `workflow_dispatch` ile tetikleyebilirsiniz.
 
+## Workflow Doğrulaması
+Bu depoda `self-lint.yml` ve `validate-reusables.yml` pipeline'ları bulunur; her değişiklikte workflow'ların sözdizimi,
+önbellek kullanımı ve çıktı uyumluluğu otomatik olarak doğrulanır.
+
 ## Destek ve İletişim
 - Sorular: Discussion açın veya "Question" issue formunu doldurun.
 - Hata/özellik: İlgili issue formunu detaylı doldurun.
