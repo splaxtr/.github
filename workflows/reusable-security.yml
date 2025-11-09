@@ -1,9 +1,22 @@
-# Reusable Security workflow combining npm audit, Trivy scans, and CodeQL analysis.
+# -----------------------------------------------------------------------------
+# Reusable Security Workflow
+# Purpose: npm audit, Trivy scans, and CodeQL analysis with shared caching
+# Usage:
+#   uses: splaxtr/.github/.github/workflows/reusable-security.yml@main
+#   with:
+#     working-directory: .
+# Outputs:
+#   status: job result (success|failure)
+# -----------------------------------------------------------------------------
 name: ♻️ Reusable Security Scan
 
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.security.result }}
     inputs:
       working-directory:
         type: string
@@ -64,7 +77,9 @@ jobs:
           path: |
             ~/.npm
             ${{ inputs.working-directory }}/node_modules
-          key: security-npm-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) }}
+          key: ${{ runner.os }}-security-npm-${{ inputs.node_version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) }}
+          restore-keys: |
+            ${{ runner.os }}-security-npm-
 
       - name: npm audit
         if: ${{ inputs.npm_audit }}
@@ -85,24 +100,36 @@ jobs:
           format: sarif
           output: trivy-results.sarif
 
+      - name: Cache Trivy database
+        if: ${{ inputs.run_trivy }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: ${{ runner.os }}-trivy-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-trivy-
+
       - name: Upload Trivy results
         if: ${{ inputs.run_trivy }}
-        uses: github/codeql-action/upload-sarif@v3
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: trivy-results.sarif
+          name: ${{ github.workflow }}-trivy-${{ github.sha }}
+          path: trivy-results.sarif
+          if-no-files-found: warn
 
       - name: Initialize CodeQL
-        if: ${{ inputs.run_codeql }}
+        id: codeql-init
+        if: ${{ inputs.run_codeql && inputs.codeql_languages != '' }}
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ inputs.codeql_languages }}
 
       - name: Autobuild
-        if: ${{ inputs.run_codeql }}
+        if: ${{ inputs.run_codeql && steps.codeql-init.outcome == 'success' }}
         uses: github/codeql-action/autobuild@v3
 
       - name: Analyze
-        if: ${{ inputs.run_codeql }}
+        if: ${{ inputs.run_codeql && steps.codeql-init.outcome == 'success' }}
         uses: github/codeql-action/analyze@v3
         with:
           category: "security"
@@ -113,3 +140,7 @@ jobs:
           echo "- npm audit: ${{ inputs.npm_audit }}" >> $GITHUB_STEP_SUMMARY
           echo "- Trivy: ${{ inputs.run_trivy }}" >> $GITHUB_STEP_SUMMARY
           echo "- CodeQL: ${{ inputs.run_codeql }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Expose status output
+        if: always()
+        run: echo "status=${{ job.status }}" >> $GITHUB_OUTPUT

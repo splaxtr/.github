@@ -1,9 +1,23 @@
-# Reusable Metrics workflow that gathers LOC, coverage, file counts, and renders SVG summaries.
+# -----------------------------------------------------------------------------
+# Reusable Metrics Workflow
+# Purpose: Collect LOC, coverage, and render SVG report
+# Usage:
+#   uses: splaxtr/.github/.github/workflows/reusable-metrics-ci.yml@main
+#   with:
+#     working-directory: frontend
+#     language: node
+# Outputs:
+#   status: job result (success|failure)
+# -----------------------------------------------------------------------------
 name: ♻️ Reusable Metrics CI
 
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+        status:
+          description: "Workflow result"
+          value: ${{ jobs.collect-metrics.result }}
     inputs:
       working-directory:
         description: "Directory of the project"
@@ -44,7 +58,16 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3 python3-pip jq
+          python3 -m pip install --upgrade pip
           pip3 install matplotlib pandas
+
+      - name: Cache metrics dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-metrics-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-metrics-pip-
 
       # --------------------------
       # Lines of Code (LOC)
@@ -223,6 +246,19 @@ EOF
           echo "| 🎯 Test Coverage | ${{ steps.coverage.outputs.COVERAGE }}% |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "![Metrics Chart](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/1/graph)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Archive metrics artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.workflow }}-${{ github.job }}-${{ github.sha }}
+          path: |
+            profile/metrics.svg
+            profile
+          if-no-files-found: warn
+
+      - name: Expose status output
+        if: always()
+        run: echo "status=${{ job.status }}" >> $GITHUB_OUTPUT
 
       # --------------------------
       - name: 📤 Upload SVG Metrics

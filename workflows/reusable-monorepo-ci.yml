@@ -1,9 +1,24 @@
-# Reusable Monorepo CI workflow to fan-out Node, Bun, Python, Go, and Flutter checks in one run.
+# -----------------------------------------------------------------------------
+# Reusable Monorepo CI Workflow
+# Purpose: fan-out Node/Bun/Python/Go/Flutter checks within a monorepo
+# Usage:
+#   uses: splaxtr/.github/.github/workflows/reusable-monorepo-ci.yml@main
+# Outputs:
+#   status: summary job result
+# -----------------------------------------------------------------------------
 name: ♻️ Reusable Monorepo CI
 
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.summary.result }}
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.summary.result }}
     inputs:
       node_version:
         type: string
@@ -62,7 +77,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ inputs.node_path }}/node_modules
-          key: node-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', inputs.node_path)) }}
+          key: ${{ runner.os }}-node-${{ inputs.node_version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.node_path)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install + lint + test
         working-directory: ${{ inputs.node_path }}
@@ -73,7 +90,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: node-coverage-${{ github.sha }}
+          name: ${{ github.workflow }}-nodejs-${{ github.sha }}
           path: ${{ inputs.node_path }}/coverage
           if-no-files-found: warn
 
@@ -90,7 +107,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ inputs.bun_path }}/node_modules
-          key: bun-${{ runner.os }}-${{ hashFiles(format('{0}/bun.lockb', inputs.bun_path)) }}
+          key: ${{ runner.os }}-bun-${{ inputs.bun_version }}-${{ hashFiles(format('{0}/bun.lockb', inputs.bun_path)) }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
 
       - name: Install + lint + test
         working-directory: ${{ inputs.bun_path }}
@@ -101,7 +120,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: bun-coverage-${{ github.sha }}
+          name: ${{ github.workflow }}-bunjs-${{ github.sha }}
           path: ${{ inputs.bun_path }}/coverage
           if-no-files-found: warn
 
@@ -121,7 +140,9 @@ jobs:
           path: |
             ${{ inputs.python_path }}/.venv
             ${{ inputs.python_path }}/.pytest_cache
-          key: python-${{ runner.os }}-${{ hashFiles(format('{0}/requirements.txt', inputs.python_path)) }}
+          key: ${{ runner.os }}-python-${{ inputs.python_version }}-${{ hashFiles(format('{0}/requirements.txt', inputs.python_path)) }}
+          restore-keys: |
+            ${{ runner.os }}-python-
 
       - name: Install + lint + test
         working-directory: ${{ inputs.python_path }}
@@ -134,7 +155,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-coverage-${{ github.sha }}
+          name: ${{ github.workflow }}-python-${{ github.sha }}
           path: ${{ inputs.python_path }}/coverage.xml
           if-no-files-found: warn
 
@@ -154,7 +175,9 @@ jobs:
           path: |
             ~/.cache/go-build
             ${{ inputs.go_path }}/bin
-          key: go-${{ runner.os }}-${{ hashFiles(format('{0}/go.sum', inputs.go_path)) }}
+          key: ${{ runner.os }}-go-${{ inputs.go_version }}-${{ hashFiles(format('{0}/go.sum', inputs.go_path)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
       - name: Install + lint + test
         working-directory: ${{ inputs.go_path }}
@@ -164,7 +187,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: go-coverage-${{ github.sha }}
+          name: ${{ github.workflow }}-golang-${{ github.sha }}
           path: ${{ inputs.go_path }}/coverage.out
           if-no-files-found: warn
 
@@ -186,7 +209,9 @@ jobs:
             ~/.pub-cache
             ${{ inputs.flutter_path }}/.dart_tool
             ${{ inputs.flutter_path }}/build
-          key: flutter-${{ runner.os }}-${{ hashFiles(format('{0}/pubspec.lock', inputs.flutter_path)) }}
+          key: ${{ runner.os }}-flutter-${{ inputs.flutter_version }}-${{ hashFiles(format('{0}/pubspec.lock', inputs.flutter_path)) }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
 
       - name: Test Flutter app
         working-directory: ${{ inputs.flutter_path }}
@@ -197,7 +222,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: flutter-coverage-${{ github.sha }}
+          name: ${{ github.workflow }}-flutter-${{ github.sha }}
           path: ${{ inputs.flutter_path }}/coverage/lcov.info
           if-no-files-found: warn
 
@@ -215,3 +240,20 @@ jobs:
           echo "- python: ${{ needs.python.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- golang: ${{ needs.golang.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- flutter: ${{ needs.flutter.result }}" >> $GITHUB_STEP_SUMMARY
+          printf "nodejs=%s\nbunjs=%s\npython=%s\ngolang=%s\nflutter=%s\n" \
+            "${{ needs.nodejs.result }}" \
+            "${{ needs.bunjs.result }}" \
+            "${{ needs.python.result }}" \
+            "${{ needs.golang.result }}" \
+            "${{ needs.flutter.result }}" > monorepo-summary.txt
+
+      - name: Upload summary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.workflow }}-summary-${{ github.sha }}
+          path: monorepo-summary.txt
+          if-no-files-found: warn
+
+      - name: Expose status output
+        if: always()
+        run: echo "status=${{ job.status }}" >> $GITHUB_OUTPUT

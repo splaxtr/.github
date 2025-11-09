@@ -1,9 +1,20 @@
-# Reusable Release Drafter workflow to keep draft releases up to date across repositories.
+# -----------------------------------------------------------------------------
+# Release Drafter Workflow
+# Purpose: keep draft releases up to date with semantic labels
+# Usage:
+#   uses: splaxtr/.github/.github/workflows/release-drafter.yml@main
+# Outputs:
+#   status: job result (success|failure)
+# -----------------------------------------------------------------------------
 name: ♻️ Reusable Release Drafter
 
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.release.result }}
     inputs:
       config_path:
         type: string
@@ -45,3 +56,4 @@ jobs:
         run: |
           echo "### Release drafter" >> $GITHUB_STEP_SUMMARY
           echo "- Config: ${{ inputs.config_path }}" >> $GITHUB_STEP_SUMMARY
+          echo "status=${{ job.status }}" >> $GITHUB_OUTPUT

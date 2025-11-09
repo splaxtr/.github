@@ -1,9 +1,20 @@
-# Reusable label sync workflow to keep issue/PR labels in sync across repositories.
+# -----------------------------------------------------------------------------
+# Reusable Label Sync Workflow
+# Purpose: keep issue/PR labels aligned with org taxonomy
+# Usage:
+#   uses: splaxtr/.github/.github/workflows/labels.yml@main
+# Outputs:
+#   status: summary job result
+# -----------------------------------------------------------------------------
 name: ♻️ Reusable Label Sync
 
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.validate.result || jobs.stats.result || jobs.sync.result }}
     inputs:
       labels_file:
         type: string
@@ -86,5 +97,9 @@ try:
     print('Labels YAML validated successfully')
 except Exception as exc:
     print(f'Validation failed: {exc}')
-    sys.exit(1)
+          sys.exit(1)
 PY
+
+      - name: Expose status output
+        if: always()
+        run: echo "status=${{ job.status }}" >> $GITHUB_OUTPUT
