@@ -1,9 +1,17 @@
-# Reusable Node CI workflow used to lint, test, and build Node.js/Bun-style apps across repos.
+# -----------------------------------------------------------------------------
+# Reusable Node CI workflow used to lint, test, and build Node.js/Bun-style apps
+# Example usage:
+#   uses: splaxtr/.github/.github/workflows/reusable-node-ci.yml@main
+# -----------------------------------------------------------------------------
 name: ♻️ Reusable Node CI
 
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      status:
+        description: "Workflow result"
+        value: ${{ jobs.node-ci.result }}
     inputs:
       node_version:
         description: "Node.js version to install"
@@ -56,6 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
         stage: [test, build]
     defaults:
@@ -64,6 +73,7 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
 
     steps:
+
       # ----------------------------
       # Checkout & toolchain setup
       # ----------------------------
@@ -91,7 +101,6 @@ jobs:
             ${{ inputs.working_directory }}/node_modules
           key: ${{ runner.os }}-node-${{ inputs.node_version }}-${{ hashFiles(format('{0}/{1}', inputs.working_directory, inputs.lockfile)) }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ inputs.node_version }}-
             ${{ runner.os }}-node-
 
       # ----------------------------
@@ -134,7 +143,7 @@ jobs:
         if: ${{ matrix.stage == 'build' && inputs.artifact_path != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: node-build-${{ github.sha }}
+          name: ${{ github.workflow }}-${{ matrix.stage }}-${{ github.sha }}
           path: ${{ inputs.working_directory }}/${{ inputs.artifact_path }}
           if-no-files-found: warn
 
