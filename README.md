@@ -10,6 +10,9 @@
   <a href="./FOLDER_STRUCTURE.md"><img src="https://img.shields.io/badge/Docs-Folder%20Structure-16a34a?style=for-the-badge" alt="Folder Structure"></a>
   <a href="./CONTRIBUTING.md"><img src="https://img.shields.io/badge/Docs-Contributing-f97316?style=for-the-badge" alt="Contributing"></a>
   <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Docs-Security%20Policy-ef4444?style=for-the-badge" alt="Security Policy"></a>
+  <a href="https://github.com/splaxtr/.github/actions/workflows/validate-reusables.yml"><img src="https://github.com/splaxtr/.github/actions/workflows/validate-reusables.yml/badge.svg" alt="Validation"></a>
+  <a href="https://github.com/splaxtr/.github/actions/workflows/self-lint.yml"><img src="https://github.com/splaxtr/.github/actions/workflows/self-lint.yml/badge.svg" alt="Lint"></a>
+  <a href="https://github.com/splaxtr/.github/actions/workflows/reusable-security.yml"><img src="https://github.com/splaxtr/.github/actions/workflows/reusable-security.yml/badge.svg" alt="Security"></a>
 </p>
 
 ## 🇬🇧 English · [🇹🇷 Türkçe](README.tr.md)
@@ -60,14 +63,14 @@ See **[WORKFLOWS_GUIDE.md](./WORKFLOWS_GUIDE.md)** for input details, matrices, 
 - [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md) – Full directory tree with explanations for each file/folder, including templates and validation assets.
 - [SETUP_GUIDE.md](./SETUP_GUIDE.md) – Step-by-step instructions for creating/updating an org-level `.github` repo, customizing contacts, and wiring workflows.
 - [CONTRIBUTING.md](./CONTRIBUTING.md) – Branching model, commit conventions, PR expectations, and label usage.
-- [SECURITY.md](./SECURITY.md) – Disclosure policy and the `security@org` contact address.
+- [SECURITY.md](./SECURITY.md) – Disclosure policy and the `ahmetsplaxtr@gmail.com` contact address.
 - Bonus references: [labels-README.md](./labels-README.md), [SUPPORT.md](./SUPPORT.md), [SUPPORT.tr.md](./SUPPORT.tr.md).
 
 ## Governance & Automation
-- [CODEOWNERS](./CODEOWNERS) – Reviewer ownership for workflows, templates, docs, and sample projects.
-- [dependabot.yml](./dependabot.yml) – Weekly dependency updates grouped by CI, frontend, and backend ecosystems.
-- [release-drafter.yml](./release-drafter.yml) – Semantic release notes with feature/fix/docs/security categories.
-- [labels.yml](./labels.yml) – Organization-wide label taxonomy (type, scope, priority, status, semver).
+- [CODEOWNERS](./CODEOWNERS) – Enforces review routing for workflows, templates, docs, and provides an escalation contact.
+- [dependabot.yml](./dependabot.yml) – Automates weekly dependency updates grouped for CI, frontend, and backend stacks.
+- [release-drafter.yml](./release-drafter.yml) – Builds semantic release notes and versions every merged PR automatically.
+- [labels.yml](./labels.yml) – Central label taxonomy powering automation (type, scope, priority, status, semver).
 
 ## Quick Start
 1. **Reference the workflows:** add a workflow in your project that reuses one of the templates, e.g.
@@ -92,10 +95,14 @@ See **[WORKFLOWS_GUIDE.md](./WORKFLOWS_GUIDE.md)** for input details, matrices, 
 This repository includes a self-lint and validation pipeline (`validate-reusables.yml` + `self-lint.yml`)
 ensuring every reusable workflow is syntactically valid, cached correctly, and exposes outputs as expected.
 
+## Lint & Security Checks
+- `self-lint.yml` runs yamllint/actionlint over the entire workflow suite on every PR.
+- `reusable-security.yml` keeps npm audit, Trivy, and CodeQL scans aligned with the same caching/output conventions.
+
 ## Support & Contact
 - Questions: open a discussion or file a “Question” issue using the provided template.
 - Bugs/features: use the corresponding issue form with as much detail as possible.
-- Security: report privately to **security@org** as outlined in [SECURITY.md](./SECURITY.md).
+- Security: report privately to **ahmetsplaxtr@gmail.com** as outlined in [SECURITY.md](./SECURITY.md).
 - General support: [SUPPORT.md](./SUPPORT.md) lists email and response expectations.
 
 Thanks for keeping the platform consistent! 🚀

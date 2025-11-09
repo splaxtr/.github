@@ -6,10 +6,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  governance_check:
+    uses: ./.github/workflows/ci-lint.yml
+
   self_lint:
+    needs: governance_check
     uses: ./.github/workflows/self-lint.yml
 
   node_ci:
+    needs: governance_check
     uses: ./.github/workflows/reusable-node-ci.yml
     with:
       node_version: '20.x'
@@ -18,6 +23,7 @@ jobs:
       artifact_path: 'src'
 
   python_ci:
+    needs: governance_check
     uses: ./.github/workflows/reusable-python-ci.yml
     with:
       python_version: '3.11'
@@ -25,6 +31,7 @@ jobs:
       coverage_file: 'coverage.xml'
 
   flutter_ci:
+    needs: governance_check
     uses: ./.github/workflows/reusable-flutter-ci.yml
     with:
       flutter_version: '3.24.0'
@@ -33,6 +40,7 @@ jobs:
       build_targets: 'android,ios,web'
 
   bun_ci:
+    needs: governance_check
     uses: ./.github/workflows/reusable-bun-ci.yml
     with:
       bun_version: '1.0.0'
@@ -40,6 +48,7 @@ jobs:
       run_e2e_tests: false
 
   go_ci:
+    needs: governance_check
     uses: ./.github/workflows/reusable-go-ci.yml
     with:
       go_version: '1.22.x'
@@ -48,6 +57,7 @@ jobs:
       build_image: false
 
   docker_build:
+    needs: governance_check
     uses: ./.github/workflows/reusable-docker-build.yml
     with:
       docker_context: 'docker'
@@ -55,6 +65,7 @@ jobs:
       push_image: false
 
   deploy_pipeline:
+    needs: governance_check
     uses: ./.github/workflows/reusable-deploy-production.yml
     with:
       environment: 'development'
@@ -68,6 +79,7 @@ jobs:
       run_smoke_tests: false
 
   monorepo_ci:
+    needs: governance_check
     uses: ./.github/workflows/reusable-monorepo-ci.yml
     with:
       node_version: '20.x'
@@ -83,6 +95,7 @@ jobs:
       flutter_path: 'mobile'
 
   metrics_ci:
+    needs: governance_check
     uses: ./.github/workflows/reusable-metrics-ci.yml
     with:
       working-directory: 'frontend'
@@ -90,6 +103,7 @@ jobs:
       coverage-file: ''
 
   security_ci:
+    needs: governance_check
     uses: ./.github/workflows/reusable-security.yml
     with:
       working-directory: '.'
@@ -98,6 +112,7 @@ jobs:
       run_codeql: false
 
   labels_sync:
+    needs: governance_check
     uses: ./.github/workflows/labels.yml
     with:
       labels_file: '.github/labels.yml'
@@ -105,11 +120,13 @@ jobs:
       collect_stats: false
 
   release_drafter:
+    needs: governance_check
     uses: ./.github/workflows/release-drafter.yml
     with:
       config_path: '.github/release-drafter.yml'
 
   composite_ci:
+    needs: governance_check
     uses: ./.github/workflows/ci-lint.yml
     with:
       node_working_directory: 'frontend'
@@ -124,6 +141,7 @@ jobs:
     name: Collect Validation Artifacts
     runs-on: ubuntu-latest
     needs:
+      - governance_check
       - self_lint
       - node_ci
       - python_ci
@@ -150,6 +168,7 @@ jobs:
           # Reusable Workflow Validation Results
           | Job | Status |
           | --- | --- |
+          | governance_check | ${{ needs.governance_check.outputs.status || needs.governance_check.result }} |
           | self_lint | ${{ needs.self_lint.outputs.status || needs.self_lint.result }} |
           | node_ci | ${{ needs.node_ci.outputs.status || needs.node_ci.result }} |
           | python_ci | ${{ needs.python_ci.outputs.status || needs.python_ci.result }} |
@@ -200,3 +219,23 @@ jobs:
       - name: Expose status output
         if: always()
         run: echo "status=${{ job.status }}" >> $GITHUB_OUTPUT
+
+  repo_summary:
+    name: 🧾 Repository Summary
+    runs-on: ubuntu-latest
+    needs:
+      - cleanup
+      - aggregate
+      - governance_check
+      - self_lint
+    if: always()
+    steps:
+      - name: Publish repo summary
+        run: |
+          echo "## Repository Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Governance Check | ${{ needs.governance_check.outputs.status || needs.governance_check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Self Lint | ${{ needs.self_lint.outputs.status || needs.self_lint.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Validation Aggregate | ${{ needs.aggregate.outputs.status || needs.aggregate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact Cleanup | ${{ needs.cleanup.outputs.status || needs.cleanup.result }} |" >> $GITHUB_STEP_SUMMARY

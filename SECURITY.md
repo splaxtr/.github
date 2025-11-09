@@ -6,7 +6,7 @@ We take the security of our users and data seriously. Please follow the guidelin
 We currently support the latest release on `main`. Fixes are backported only when the issue is severe (critical or high impact).
 
 ## Reporting a vulnerability
-- Email **security@org** with the subject `SECURITY REPORT`.
+- Email **ahmetsplaxtr@gmail.com** with the subject `SECURITY REPORT`.
 - Include a detailed description, reproduction steps, affected components, and impact assessment.
 - Please do not open public issues for security reports.
 - If you have an exploit or proof of concept, attach it privately and encrypt if necessary.

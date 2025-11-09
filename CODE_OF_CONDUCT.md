@@ -54,7 +54,7 @@ topluluk moderatörlerine bildirin. Tüm şikayetler incelenecek, araştırılac
 durum için uygun görülen bir yanıt verilecektir.
 
 **Moderatörlere ulaşım:**
-- E-posta: **conduct@tayank.com**
+- E-posta: **ahmetsplaxtr@gmail.com**
 - Özel mesaj: [@tayank-moderators](https://github.com/orgs/Tayank-LTD/teams/moderators)
 
 Tüm şikayetler gizli tutulacak ve moderatör ekibinin güvenliği ve gizliliği 
@@ -83,7 +83,7 @@ koruma yükümlülüğü bulunmaktadır.
 ## 📞 Destek ve İletişim
 
 **Topluluk moderatörleri:**
-- Ana iletişim: [conduct@tayank.com](mailto:conduct@tayank.com)
+- Ana iletişim: [ahmetsplaxtr@gmail.com](mailto:ahmetsplaxtr@gmail.com)
 - GitHub: [@tayank-moderators](https://github.com/orgs/Tayank-LTD/teams/moderators)
 
 ## 📜 Lisans ve Atıf

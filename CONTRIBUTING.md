@@ -42,4 +42,4 @@ Please apply the appropriate labels when opening a PR or filing an issue so main
 ## Reporting issues
 Use the issue templates under `.github/ISSUE_TEMPLATE` to report bugs, request features, or ask questions. Include repro steps, environment details, and acceptance criteria when relevant.
 
-Thank you for contributing! 🚀
+Thank you for contributing! 🚀 For any questions or support needs, email **ahmetsplaxtr@gmail.com**.

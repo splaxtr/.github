@@ -10,6 +10,9 @@
   <a href="./FOLDER_STRUCTURE.md"><img src="https://img.shields.io/badge/Dok%C3%BCman-Klas%C3%B6r%20Yap%C4%B1s%C4%B1-16a34a?style=for-the-badge" alt="Klasör Yapısı"></a>
   <a href="./CONTRIBUTING.md"><img src="https://img.shields.io/badge/Dok%C3%BCman-Katk%C4%B1-f97316?style=for-the-badge" alt="Katkı"></a>
   <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Dok%C3%BCman-G%C3%BCvenlik-ef4444?style=for-the-badge" alt="Güvenlik Politikası"></a>
+  <a href="https://github.com/splaxtr/.github/actions/workflows/validate-reusables.yml"><img src="https://github.com/splaxtr/.github/actions/workflows/validate-reusables.yml/badge.svg" alt="Doğrulama İş Akışı"></a>
+  <a href="https://github.com/splaxtr/.github/actions/workflows/self-lint.yml"><img src="https://github.com/splaxtr/.github/actions/workflows/self-lint.yml/badge.svg" alt="Lint Denetimi"></a>
+  <a href="https://github.com/splaxtr/.github/actions/workflows/reusable-security.yml"><img src="https://github.com/splaxtr/.github/actions/workflows/reusable-security.yml/badge.svg" alt="Güvenlik Denetimi"></a>
 </p>
 
 ## [🇬🇧 English](README.md) · 🇹🇷 Türkçe
@@ -60,8 +63,14 @@ Detaylı girişler ve sorun giderme notları için **[WORKFLOWS_GUIDE.md](./WORK
 - [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md) – Şablonlar ve doğrulama varlıkları dahil tüm dosyaların açıklamalı klasör ağacı.
 - [SETUP_GUIDE.md](./SETUP_GUIDE.md) – Organizasyon seviyesinde `.github` reposu oluşturma/güncelleme, iletişim bilgilerini özelleştirme ve workflow bağlama adımları.
 - [CONTRIBUTING.md](./CONTRIBUTING.md) – Branch modeli, commit konvansiyonları, PR beklentileri ve etiket kullanımı.
-- [SECURITY.md](./SECURITY.md) – Açıklama politikası ve `security@org` iletişim adresi.
+- [SECURITY.md](./SECURITY.md) – Açıklama politikası ve `ahmetsplaxtr@gmail.com` iletişim adresi.
 - Ek kaynaklar: [labels-README.md](./labels-README.md), [SUPPORT.md](./SUPPORT.md), [SUPPORT.tr.md](./SUPPORT.tr.md).
+
+## Yönetişim & Otomasyon
+- [CODEOWNERS](./CODEOWNERS) – İnceleme yönlendirmelerini zorunlu kılar ve sorumlulukları belirtir.
+- [dependabot.yml](./dependabot.yml) – CI, frontend ve backend ekosistemlerini kapsayan haftalık bağımlılık güncellemelerini yönetir.
+- [release-drafter.yml](./release-drafter.yml) – Semantik sürüm notlarını ve sürüm numaralarını otomatik oluşturur.
+- [labels.yml](./labels.yml) – Otomasyonla uyumlu tip/kapsam/öncelik/semver etiket taksonomisini tanımlar.
 
 ## Yönetişim ve Otomasyon
 - [CODEOWNERS](./CODEOWNERS) – Workflow, şablon, doküman ve örnek projeler için reviewer sahiplikleri.
@@ -92,10 +101,16 @@ Detaylı girişler ve sorun giderme notları için **[WORKFLOWS_GUIDE.md](./WORK
 Bu depoda `self-lint.yml` ve `validate-reusables.yml` pipeline'ları bulunur; her değişiklikte workflow'ların sözdizimi,
 önbellek kullanımı ve çıktı uyumluluğu otomatik olarak doğrulanır.
 
+## Lint Denetimi
+- `self-lint.yml`, yamllint ve actionlint ile tüm workflow'ları her PR'da tarar.
+
+## Güvenlik Denetimi
+- `reusable-security.yml`, npm audit, Trivy ve CodeQL taramalarını tek bir ortak yapı altında çalıştırır.
+
 ## Destek ve İletişim
 - Sorular: Discussion açın veya "Question" issue formunu doldurun.
 - Hata/özellik: İlgili issue formunu detaylı doldurun.
-- Güvenlik: [SECURITY.md](./SECURITY.md) içinde anlatıldığı gibi **security@org** adresine özel olarak iletin.
+- Güvenlik: [SECURITY.md](./SECURITY.md) içinde anlatıldığı gibi **ahmetsplaxtr@gmail.com** adresine özel olarak iletin.
 - Genel destek: [SUPPORT.md](./SUPPORT.md) dokümanındaki e-posta ve SLA bilgilerini kullanın.
 
 Katkılarınız sayesinde platform tutarlı kalıyor, teşekkürler! 🚀

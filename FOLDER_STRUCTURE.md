@@ -59,7 +59,7 @@ Located under `workflows/`:
 - `WORKFLOWS_GUIDE.md`: Deep dive into inputs/outputs per workflow.
 - `SETUP_GUIDE.md`: Org-level bootstrap/update steps, including validation instructions.
 - `CONTRIBUTING.md`: Branching rules, commit tags, PR expectations, and label usage.
-- `SECURITY.md`: Disclosure policy and `security@org` contact.
+- `SECURITY.md`: Disclosure policy and `ahmetsplaxtr@gmail.com` contact.
 - `SUPPORT.md` (+ Turkish version): Communication channels and SLA expectations.
 - `FOLDER_STRUCTURE.md`: This document.
 

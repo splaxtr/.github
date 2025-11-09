@@ -1,30 +1,10 @@
-# CODEOWNERS defines default reviewers for changes in this repository.
-# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# CODEOWNERS ensures every PR gets routed to the right reviewers.
+# Governance contact: ahmetsplaxtr@gmail.com
 
-# Workflows and automation fall under the DevOps team
-/.github/workflows/ @splaxtr/devops-team
-/workflows/ @splaxtr/devops-team
+# Core ownership
+/.github/workflows/*    @DevOps
+/.github/ISSUE_TEMPLATE/*  @Product
+/.github/*md             @TechWriters
 
-# Issue/PR templates and community health files are owned by the Product team
-/ISSUE_TEMPLATE/ @splaxtr/product-team
-/PULL_REQUEST_TEMPLATE.md @splaxtr/product-team
-/CONTRIBUTING.md @splaxtr/product-team
-/SUPPORT.md @splaxtr/product-team
-/SUPPORT.tr.md @splaxtr/product-team
-
-# Docs and guides
-/docs/ @splaxtr/tech-writers
-/README.md @splaxtr/tech-writers
-/README.tr.md @splaxtr/tech-writers
-/WORKFLOWS_GUIDE.md @splaxtr/tech-writers
-/SETUP_GUIDE.md @splaxtr/tech-writers
-/FOLDER_STRUCTURE.md @splaxtr/tech-writers
-
-# Sample apps and automation scripts default to DevOps for review
-/backend/ @splaxtr/devops-team
-/frontend/ @splaxtr/devops-team
-/bun-app/ @splaxtr/devops-team
-/mobile/ @splaxtr/devops-team
-/bots/ @splaxtr/devops-team
-/docker/ @splaxtr/devops-team
-/scripts/ @splaxtr/devops-team
+# Fallback
+* @OrgAdmins
