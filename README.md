@@ -63,6 +63,12 @@ See **[WORKFLOWS_GUIDE.md](./WORKFLOWS_GUIDE.md)** for input details, matrices, 
 - [SECURITY.md](./SECURITY.md) – Disclosure policy and the `security@org` contact address.
 - Bonus references: [labels-README.md](./labels-README.md), [SUPPORT.md](./SUPPORT.md), [SUPPORT.tr.md](./SUPPORT.tr.md).
 
+## Governance & Automation
+- [CODEOWNERS](./CODEOWNERS) – Reviewer ownership for workflows, templates, docs, and sample projects.
+- [dependabot.yml](./dependabot.yml) – Weekly dependency updates grouped by CI, frontend, and backend ecosystems.
+- [release-drafter.yml](./release-drafter.yml) – Semantic release notes with feature/fix/docs/security categories.
+- [labels.yml](./labels.yml) – Organization-wide label taxonomy (type, scope, priority, status, semver).
+
 ## Quick Start
 1. **Reference the workflows:** add a workflow in your project that reuses one of the templates, e.g.
    ```yaml

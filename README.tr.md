@@ -63,6 +63,12 @@ Detaylı girişler ve sorun giderme notları için **[WORKFLOWS_GUIDE.md](./WORK
 - [SECURITY.md](./SECURITY.md) – Açıklama politikası ve `security@org` iletişim adresi.
 - Ek kaynaklar: [labels-README.md](./labels-README.md), [SUPPORT.md](./SUPPORT.md), [SUPPORT.tr.md](./SUPPORT.tr.md).
 
+## Yönetişim ve Otomasyon
+- [CODEOWNERS](./CODEOWNERS) – Workflow, şablon, doküman ve örnek projeler için reviewer sahiplikleri.
+- [dependabot.yml](./dependabot.yml) – CI, frontend ve backend ekosistemleri için haftalık bağımlılık güncellemeleri.
+- [release-drafter.yml](./release-drafter.yml) – Feature/Fix/Docs/Security kategorileriyle semantik sürüm notları.
+- [labels.yml](./labels.yml) – Organizasyon genelinde tip, kapsam, öncelik, durum ve semver etiketleri.
+
 ## Hızlı Başlangıç
 1. **Workflow'u referans alın:** projenize aşağıdaki gibi yeniden kullanılabilir workflow ekleyin.
    ```yaml
